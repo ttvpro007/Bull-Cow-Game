@@ -73,14 +73,14 @@ void PrintIntroduction()
 	std::cout << "                                                                                \n";
 	std::cout << "                                                                                \n";
 	std::cout << "                         ,@@@@@@@,              _.-^-._         +&-             \n";
-	std::cout << "                 ,,,.   ,@@@@@@/@@,         .-'         '-.    .--.             \n";
-	std::cout << "               ,&%%&%&&%,@@@@@/@@@@@     .-'       _       '-. |__|             \n";
-	std::cout << "              ,%&\\%&&%&&%,@@@\\@@@/@@    /         |_|         \\|  |          \n";
-	std::cout << "              %&&%&%&/%&&%@@\\@@/ /@@   /   __             __   \\  |           \n";
-	std::cout << "              %&&%/ %&%%&&@@\\ V /@@'  /|  |  |  _____    |  |  |\\ |           \n";
-	std::cout << "              `&%\\|o|/%&'    |.|       |  |__|  |==|==|  |__|  |  |            \n";
-	std::cout << "         |---|---|---|---|---|---|---|-|        |--|--|        |  |             \n";
-	std::cout << "         |---|---|---|---|---|---|---|-|        |==|==|        |  |             \n";
+	std::cout << "                 ,,,.   ,@@@@@@/@@,         .-'---------'-.    .--.             \n";
+	std::cout << "               ,&%%&%&&%,@@@@@/@@@@@     .-'-------_-------'-. |__|             \n";
+	std::cout << "              ,%&\\%&&%&&%,@@@\\@@@/@@    /---------|_|---------\\|  |          \n";
+	std::cout << "              %&&%&%&/%&&%@@\\@@/ /@@   / _____           _____ \\  |           \n";
+	std::cout << "              %&&%/ %&%%&&@@\\ V /@@'  /| |_|_|  _______  |_|_| |\\ |           \n";
+	std::cout << "              `&%\\|o|/%&'    |.|       | |_|_|  |==|==|  |_|_| |  |            \n";
+	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |--|--|        |  |--|---|---|- \n";
+	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |==|==|        |  |--|---|---|- \n";
 	std::cout << " '-'''-'-''-''-''''-''-'''-''''-''-'''-'''''-''-'''-'-''-'''''-''-'''-''-''-''' \n";
 	std::cout << " ' 'VV'   '  ''' ' '  '  ''       ' '   '''   'VV ''   '''' ' ''    '  ' ''V    \n";
 	std::cout << "  ''' ' VV'   'vv '  vv'   }___{  '''VV'  ''''  '  ___ '''  '  VVV' ' V''  '' ' \n";
@@ -92,6 +92,19 @@ void PrintIntroduction()
 	std::cout << "    ''    vV '''  VV  ''    V  ' '' 'VV '''   ' Vv''   '''' ' ''V   'V  v'    ' \n";
 	std::cout << " '  ''    '     '''   '' '    ''  vv      '  '     ''   ''     '    ' '   '''   \n";
 	std::cout << " ''-'-''-''-''-''''-''-'''-''''-''-'''-''''''-'-'''-''-'''-'-''-'''''-''-'-'''- \n";
+	std::cout << std::endl;
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "    *  INSTRUCTION: In this game, you'll guess an ISOGRAM with the        *     \n";
+	std::cout << "    *  length of your choice in 5 turns. After each guess, you'll see the *     \n";
+	std::cout << "    *  the number of BULLS and COWS.                                      *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    *  BULLS is the number of letter you guessed right in the right place *     \n";
+	std::cout << "    *  COWS is the number of letter you guessed right in the wrong place  *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    *                    *** What is an ISOGRAM? ***                      *     \n";
+	std::cout << "    *      *** An ISOGRAM is a word WITHOUT a repeating letter ***        *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    ***********************************************************************     \n";
 	std::cout << std::endl;
 	return;
 }
@@ -109,13 +122,13 @@ void Initialize()
 }
 void PrintHint()
 {
-	std::cout << "Can you guess the " << BullCowGame.GetHiddenWordLength() << " isogram that I'm thinking of?\n\n";
-	std::cout << "     **********************************************************************     \n";
-	std::cout << "     *                            !!! HINT !!!                            *     \n";
-	std::cout << "     **********************************************************************     \n";
-	std::cout << "          LENGTH: " << BullCowGame.GetHiddenWordLength() << " letters.		  \n";
-	std::cout << "          DESCRIPTION: " << BullCowGame.GetHiddenWordDescription() << "		  \n";
-	std::cout << "     **********************************************************************     \n";
+	std::cout << "Can you guess the \"" << BullCowGame.GetHiddenWordLength() << "\" isogram that I'm thinking of?\n\n";
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "    *                             !!! HINT !!!                            *     \n";
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "         LENGTH: " << BullCowGame.GetHiddenWordLength() << " letters.			  \n";
+	std::cout << "         DESCRIPTION: " << BullCowGame.GetHiddenWordDescription() << "		  \n";
+	std::cout << "    ***********************************************************************     \n";
 	std::cout << std::endl;
 	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
 	return;
@@ -140,8 +153,8 @@ void RunGameLoop()
 			// submit valid guess to the game and receive counts
 			FBullCowCount BullCowCount = BullCowGame.SubmitValidGuess(Guess);
 
-			std::cout << "Bulls = " << BullCowCount.Bull;
-			std::cout << "   Cow = " << BullCowCount.Cow << "\n";
+			std::cout << "BULLS [" << BullCowCount.Bull << "]";
+			std::cout << "   COWS [" << BullCowCount.Cow << "]\n";
 
 			PrintGuess(Guess);
 		}
@@ -167,8 +180,8 @@ FText GetValidGuess()
 	do
 	{
 		// prompt user input
-		std::cout << "Try " << CurrentTry << " of " << BullCowGame.GetMaxTries();
-		std::cout << ". Enter your guess: ";
+		std::cout << "[Try " << CurrentTry << " of " << BullCowGame.GetMaxTries();
+		std::cout << "] Please enter your guess: ";
 		std::getline(std::cin, Guess);
 
 		GuessStatus = BullCowGame.CheckGuessValidity(Guess);
