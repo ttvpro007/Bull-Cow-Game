@@ -10,6 +10,7 @@ interaction. For game logic, see FBullCowGame class.
 #define FText std::string
 #define int32 int
 
+void PlayGame();
 void PrintIntroduction();
 void Initialize();
 void PrintHint();
@@ -23,6 +24,8 @@ int32 AskWordLength();
 void PrintWordsInDictionary();
 static int32 StringToInt32(FString);
 
+void TEST_CSVFileWrite();
+
 //static FBullCowGame BullCowGame(3);
 FBullCowGame BullCowGame;
 
@@ -30,15 +33,24 @@ int main()
 {
 	//PrintWordsInDictionary();
 	
+	//PlayGame();
+
+	for (size_t i = 0; i < 5; i++)
+	{
+		TEST_CSVFileWrite();
+	}
+
+	return 0; // exit application
+}
+
+void PlayGame()
+{
 	PrintIntroduction();
 
 	Initialize();
 
 	RunGameLoop();
-
-	return 0; // exit application
 }
-
 void PrintIntroduction()
 {
 	// introduction
@@ -320,4 +332,22 @@ int32 StringToInt32(FString String)
 		// conversion success
 		return Integer;
 	}
+}
+
+void TEST_CSVFileWrite()
+{
+	// open existing csv file
+	CVSFileManager Test("Test File.csv");
+	// get data from the file
+	TArray<FString> Data = Test.GetData();
+	// increment the ID of the word based on array size
+	// and put in stream formating is "ID#,"  for example "32,"
+	std::stringstream SStream;
+	SStream << Data.size() + 1 << ',';
+	FString Line; // for string storage
+	SStream >> Line; // initiate to format "ID#," for example "32,"
+	// get new value and append to line
+	Line = Line.append("ging,A random word");
+	Data.push_back(Line); // added to data
+	Test.WriteFile("Test File.csv", Data); // create new or override existing file with data
 }

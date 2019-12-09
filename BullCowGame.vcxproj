@@ -151,12 +151,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CVSReader.cpp" />
+    <ClCompile Include="CVSFileManager.cpp" />
     <ClCompile Include="FBullCowGame.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CVSReader.h" />
+    <ClInclude Include="CVSFileManager.h" />
     <ClInclude Include="FBullCowGame.h" />
     <ClInclude Include="IncludeHeader.h" />
   </ItemGroup>

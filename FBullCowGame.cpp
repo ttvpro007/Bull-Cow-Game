@@ -184,7 +184,7 @@ bool FBullCowGame::HasWhiteSpace(FString Word) const
 
 TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString File)
 {
-	CVSReader WordBankReader = CVSReader(File); // read file
+	CVSFileManager WordBankReader = CVSFileManager(File); // read file
 
 	constexpr int32 COLUMN = 3;
 

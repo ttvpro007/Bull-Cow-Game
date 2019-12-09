@@ -21,7 +21,7 @@
     <ClCompile Include="FBullCowGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CVSReader.cpp">
+    <ClCompile Include="CVSFileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,10 +29,10 @@
     <ClInclude Include="FBullCowGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CVSReader.h">
+    <ClInclude Include="IncludeHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IncludeHeader.h">
+    <ClInclude Include="CVSFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
