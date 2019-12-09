@@ -35,4 +35,6 @@ void CVSReader::Import(FString File)
 		std::getline(FIn, Line); // read an entire row and store in the variable Line
 		Data.push_back(Line); // store the line that was read into data vector
 	}
+
+	return;
 }

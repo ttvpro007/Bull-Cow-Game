@@ -1,39 +1,48 @@
 #include "FBullCowGame.h"
 
 FBullCowGame::FBullCowGame()
-	: CurrentTry(1), MaxTries(3),
-	IsogramDictionary(GetIsogramDictionaryFromFile("Isogram Word Bank.csv")),
-	UserIndicatedWordLength(0),
-	WordAndDescription(GetWordAndDescriptionFromDictionary(UserIndicatedWordLength, IsogramDictionary))
+	: CurrentTry(0), MaxTries(0), MinLength(0), MaxLength(0), UserIndicatedWordLength(0),
+	IsogramDictionary(GetIsogramDictionaryFromFile("Isogram Word Bank.csv"))
 {
 }
-FBullCowGame::FBullCowGame(int32 MaxTries)
-	: CurrentTry(1), MaxTries(MaxTries),
-	IsogramDictionary (GetIsogramDictionaryFromFile("Isogram Word Bank.csv")),
-	UserIndicatedWordLength(0),
-	WordAndDescription(GetWordAndDescriptionFromDictionary(UserIndicatedWordLength, IsogramDictionary))
-{
-}
-FBullCowGame::FBullCowGame(int32 WordLength, int32 MaxTries)
-	: CurrentTry(1), MaxTries(MaxTries),
-	IsogramDictionary(GetIsogramDictionaryFromFile("Isogram Word Bank.csv")),
-	UserIndicatedWordLength(WordLength),
-	WordAndDescription(GetWordAndDescriptionFromDictionary(UserIndicatedWordLength, IsogramDictionary))
-{
-}
+
 FBullCowGame::~FBullCowGame()
 {
+}
+
+void FBullCowGame::Initialize()
+{
+	CurrentTry = 1;
+	MaxTries = 3;
+	UserIndicatedWordLength = 0;
+	WordAndDescription = GetWordAndDescriptionFromDictionary(UserIndicatedWordLength, IsogramDictionary);
+}
+
+void FBullCowGame::Initialize(int32 MaxTries)
+{
+	CurrentTry = 1;
+	this->MaxTries = MaxTries;
+	UserIndicatedWordLength = 0;
+	WordAndDescription = GetWordAndDescriptionFromDictionary(UserIndicatedWordLength, IsogramDictionary);
+}
+
+void FBullCowGame::Initialize(int32 WordLength, int32 MaxTries)
+{
+	CurrentTry = 1;
+	this->MaxTries = MaxTries;
+	UserIndicatedWordLength = WordLength;
+	WordAndDescription = GetWordAndDescriptionFromDictionary(UserIndicatedWordLength, IsogramDictionary);
 }
 
 int32 FBullCowGame::GetMaxTries() const { return MaxTries; }
 int32 FBullCowGame::GetCurrentTry() const { return CurrentTry; }
 FString FBullCowGame::GetHiddenWord() const { return WordAndDescription[0]; }
 FString FBullCowGame::GetHiddenWordDescription() const { return WordAndDescription[1]; }
-int32 FBullCowGame::GetHiddenWordLength() const { return WordAndDescription[0].length(); }
+int32 FBullCowGame::GetHiddenWordLength() const { return (int32)WordAndDescription[0].length(); }
 bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
 TMap<int32, TArray<FString>> FBullCowGame::GetDictionary() const { return IsogramDictionary; }
 
-EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess)
+EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
 	if (HasWhiteSpace(Guess)) // if guess has white space
 	{
@@ -93,7 +102,7 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 	return BullCowCount;
 }
 
-EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength)
+EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength) const
 {
 	// will return -1 if cannot conver to integer
 	int32 IWordLength = StringToInt32(WordLength);
@@ -120,9 +129,9 @@ EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength)
 	}
 }
 
-void FBullCowGame::SetUserIndicatedWordLength(FString WordLength)
+void FBullCowGame::SetUserIndicatedWordLength(int32 WordLength)
 {
-	UserIndicatedWordLength = StringToInt32(WordLength);
+	UserIndicatedWordLength = WordLength;
 }
 
 void FBullCowGame::Reset()
@@ -227,7 +236,7 @@ TArray<FString> FBullCowGame::GetWordAndDescriptionFromDictionary(int32 WordLeng
 {
 	std::default_random_engine RandomGenerator;
 	RandomGenerator.seed((unsigned int)std::chrono::steady_clock::now().time_since_epoch().count());
-	std::uniform_int_distribution<int32> IDRandomDistribution(1, Dictionary.size());
+	std::uniform_int_distribution<int32> IDRandomDistribution(1, (int32)Dictionary.size());
 
 	// exception handler for initialize WordLengthRandomDistribution
 	ExceptionHandlerInt32LessThanZero(MinLength, "MinLength");
@@ -282,7 +291,7 @@ void FBullCowGame::InitializingSomePrivateVariables(int32 ID, int32 WordLength)
 	return;
 }
 
-bool FBullCowGame::IsIDAvailable(int32 ID)
+bool FBullCowGame::IsIDAvailable(int32 ID) const
 {
 	// check every element in id and length table
 	for (auto Iterator = AvailableIDAndLengthTable.begin(); Iterator != AvailableIDAndLengthTable.end(); ++Iterator)
@@ -298,7 +307,7 @@ bool FBullCowGame::IsIDAvailable(int32 ID)
 	// ID not available
 	return false;
 }
-bool FBullCowGame::IsLengthAvalable(int32 WordLength)
+bool FBullCowGame::IsLengthAvalable(int32 WordLength) const
 {
 	// check every element in id and length table
 	for (auto Iterator = AvailableIDAndLengthTable.begin(); Iterator != AvailableIDAndLengthTable.end(); ++Iterator)
@@ -319,7 +328,7 @@ void FBullCowGame::RemoveUsedIDAndLength(int32 ID)
 	AvailableIDAndLengthTable.erase(ID);
 }
 
-void FBullCowGame::ExceptionHandlerInt32LessThanZero(int32 Variable, FString VariableName)
+void FBullCowGame::ExceptionHandlerInt32LessThanZero(int32 Variable, FString VariableName) const
 {
 	try
 	{

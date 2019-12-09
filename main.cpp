@@ -4,33 +4,35 @@ This acts as the view in a MVC pattern, and is responsible for all user
 interaction. For game logic, see FBullCowGame class.
 */
 
-#include <iostream>
-#include <string>
+#include "IncludeHeader.h"
 #include "FBullCowGame.h"
 
 #define FText std::string
 #define int32 int
 
-
 void PrintIntroduction();
+void Initialize();
 void PrintHint();
 void RunGameLoop();
 FText GetValidGuess();
 void PrintGuess(FText Guess);
 void PrintGameSummary();
 bool AskToPlayAgain();
-FText AskWordLength();
+int32 AskWordLength();
 
 void PrintWordsInDictionary();
+static int32 StringToInt32(FString);
 
 //static FBullCowGame BullCowGame(3);
-FBullCowGame BullCowGame(5);
+FBullCowGame BullCowGame;
 
 int main()
 {
 	//PrintWordsInDictionary();
 	
 	PrintIntroduction();
+
+	Initialize();
 
 	RunGameLoop();
 
@@ -40,70 +42,84 @@ int main()
 void PrintIntroduction()
 {
 	// introduction
-	std::cout << "              .                                                                 \n";
-	std::cout << "               		                                                          \n";
-	std::cout << "              |		                                                          \n";
-	std::cout << "     .               /                                                          \n";
-	std::cout << "      \\       I     	                                                          \n";
-	std::cout << "                  /                                                             \n";
-	std::cout << "        \\  ,g88R_                                                              \n";
-	std::cout << "          d888(`  ).                               _                         __ \n";
-	std::cout << " -  --==  888(     ).=--                _      .+(`  )`.              .--._.'  '\n";
-	std::cout << ")         Y8P(       '`.            _+(   ) --:(   .    )          .=(         )\n";
-	std::cout << "        .+(`(      .   )       .-- '      _   `.  (    ) )         (   .  )   ) \n";
-	std::cout << "       ((    (..__.:'-'     .=(   )     (   )   ` _`  ) )         (   (   ))    \n";
-	std::cout << "`.     `(       ) )         (   .  )    ''    )    (   )    ._      `- __.'     \n";
-	std::cout << "  )      ` __.:'   )       (   (   )) (  (     ) _: `-'  .:(`  )           (    \n";
-	std::cout << ")  )  ( )       --'         `- __.'     -+_ _:'         :(      ))          '-__\n";
-	std::cout << ".-'  (_.'          .')                                  `(    )  ))             \n";
-	std::cout << "                  (_  )                                   ` __.:'               \n";
-	std::cout << "                                       	                                      \n";
-	std::cout << "-..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.---.-'`,---..-_.--,-,,..._.--..-.\n";
+	std::cout << "               .                                                                \n";
+	std::cout << "                		                                                          \n";
+	std::cout << "               |		                                                          \n";
+	std::cout << "      .               /                                                         \n";
+	std::cout << "       \\       I     	                                                      \n";
+	std::cout << "                   /                                                            \n";
+	std::cout << "         \\  ,g88R_                                                             \n";
+	std::cout << "           d888(`  ).                             _                         __  \n";
+	std::cout << "  -  --==  888(     ).=--              _      .+(`  )`.              .--._.'  ' \n";
+	std::cout << " )         Y8P(       '`.          _+(   ) --:(   .    )          .=(         ) \n";
+	std::cout << "         .+(`(      .   )     .-- '      _   `.  (    ) )         (   .  )   )  \n";
+	std::cout << "        ((    (..__.:'-'   .=(   )     (   )   ` _`  ) )         (   (   ))     \n";
+	std::cout << " `.     `(       ) )       (   .  )    ''    )    (   )    ._      `- __.'      \n";
+	std::cout << "   )      ` __.:'   )     (   (   )) (  (     ) _: `-'  .:(`  )           (     \n";
+	std::cout << " )  )  ( )       --'       `- __.'     -+_ _:'         :(      ))          '-__ \n";
+	std::cout << " .-'  (_.'          .')                                `(    )  ))              \n";
+	std::cout << "                   (_  )                                 ` __.:'                \n";
+	std::cout << "                                      	                                      \n";
+	std::cout << " -..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.---.-'`,---..-_.--,-,,..._.--.. \n";
 	std::cout << "                                                                                \n";
-	std::cout << "               _____________________________________________                    \n";
-	std::cout << "              /                                             \\	              \n";
-	std::cout << "             /           Welcome to Bulls and Cows           \\                 \n";
-	std::cout << "             \\               A fun word game!                /                 \n";
-	std::cout << "              \\_____________________________________________/	              \n";
-	std::cout << "                                                                                \n";
-	std::cout << "                                                                                \n";
-	std::cout << "-.-.,,._,-.--._.--,--'`,,'`,---..-_,,..._.--..-..-..-.--+-....__---._.-,--.---,-\n";
+	std::cout << "                _____________________________________________                   \n";
+	std::cout << "               /                                             \\	              \n";
+	std::cout << "              /           Welcome to Bulls and Cows           \\                \n";
+	std::cout << "              \\               A fun word game!                /                \n";
+	std::cout << "               \\_____________________________________________/	              \n";
 	std::cout << "                                                                                \n";
 	std::cout << "                                                                                \n";
-	std::cout << "                        ,@@@@@@@,              _.-^-._         +&-              \n";
-	std::cout << "                ,,,.   ,@@@@@@/@@,         .-'         '-.    .--.              \n";
-	std::cout << "              ,&%%&%&&%,@@@@@/@@@@@     .-'       _       '-. |__|              \n";
-	std::cout << "             ,%&\\%&&%&&%,@@@\\@@@/@@    /         |_|         \\|  |           \n";
-	std::cout << "             %&&%&%&/%&&%@@\\@@/ /@@   /   __             __   \\  |            \n";
-	std::cout << "             %&&%/ %&%%&&@@\\ V /@@'  /|  |  |  _____    |  |  |\\ |            \n";
-	std::cout << "             `&%\\|o|/%&'    |.|       |  |__|  |==|==|  |__|  |  |             \n";
-	std::cout << "        |---|---|---|---|---|---|---|-|        |--|--|        |  |              \n";
-	std::cout << "        |---|---|---|---|---|---|---|-|        |==|==|        |  |              \n";
-	std::cout << "'-'''-'-''-''-''''-''-'''-''''-''-'''-'''''-''-'''-'-''-'''''-''-'''-''-''-''''-\n";
-	std::cout << "' 'VV'   '  ''' ' '  '  ''       ' '   '''   'VV ''   '''' ' ''    '  ' ''V   ' \n";
-	std::cout << " ''' ' VV'   'vv '  vv'   }___{  '''VV'  ''''  '  ___ '''  '  VVV' ' V''  '' '''\n";
-	std::cout << "''' ' '  ' ''      ''     (o o)  ' '' vv'' '     (o o)      '   ''  v  '   VVV '\n";
-	std::cout << " '''V    'V   '''  /-------\\ /  '''     ''  '     \\ /-------\\   '''  '   ''' \n";
-	std::cout << " ''  ' '' '' '    / | BULL |O     ''  '    'vvv    O| COW  | \\   '''vv ' 'V    \n";
-	std::cout << "   'vv  '''      *  |-,--- |   ''vvv'   '   ''   '  |------|  *    '  ''   ''   \n";
-	std::cout << " ''    'v'' ' ''    ^   '  ^ '  '''   '    ''''     ^ '''  ^ ' '' ''  '''  ' v' \n";
-	std::cout << "   ''    vV '''  VV  ''    V  ' '' 'VV '''   ' Vv''   '''' ' ''V   'V  v'    '' \n";
-	std::cout << "'  ''    '     '''   '' '    ''  vv      '  '     ''   ''     '    ' '   '''  ''\n";
-	std::cout << "''-'-''-''-''-''''-''-'''-''''-''-'''-''''''-'-'''-''-'''-'-''-'''''-''-'-'''-'-\n";
+	std::cout << " -.-.,,._,-.--._.--,--'`,,'`,---..-_,,..._.--..-..-..-.--+-....__---._.-,--.--- \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                         ,@@@@@@@,              _.-^-._         +&-             \n";
+	std::cout << "                 ,,,.   ,@@@@@@/@@,         .-'         '-.    .--.             \n";
+	std::cout << "               ,&%%&%&&%,@@@@@/@@@@@     .-'       _       '-. |__|             \n";
+	std::cout << "              ,%&\\%&&%&&%,@@@\\@@@/@@    /         |_|         \\|  |          \n";
+	std::cout << "              %&&%&%&/%&&%@@\\@@/ /@@   /   __             __   \\  |           \n";
+	std::cout << "              %&&%/ %&%%&&@@\\ V /@@'  /|  |  |  _____    |  |  |\\ |           \n";
+	std::cout << "              `&%\\|o|/%&'    |.|       |  |__|  |==|==|  |__|  |  |            \n";
+	std::cout << "         |---|---|---|---|---|---|---|-|        |--|--|        |  |             \n";
+	std::cout << "         |---|---|---|---|---|---|---|-|        |==|==|        |  |             \n";
+	std::cout << " '-'''-'-''-''-''''-''-'''-''''-''-'''-'''''-''-'''-'-''-'''''-''-'''-''-''-''' \n";
+	std::cout << " ' 'VV'   '  ''' ' '  '  ''       ' '   '''   'VV ''   '''' ' ''    '  ' ''V    \n";
+	std::cout << "  ''' ' VV'   'vv '  vv'   }___{  '''VV'  ''''  '  ___ '''  '  VVV' ' V''  '' ' \n";
+	std::cout << " ''' ' '  ' ''      ''     (o o)  ' '' vv'' '     (o o)      '   ''  v  '   VVV \n";
+	std::cout << "  '''V    'V   '''  /-------\\ /  '''     ''  '     \\ /-------\\   '''  '   '' \n";
+	std::cout << "  ''  ' '' '' '    / | BULL |O     ''  '    'vvv    O| COW  | \\   '''vv ' 'V   \n";
+	std::cout << "    'vv  '''      *  |-,--- |   ''vvv'   '   ''   '  |------|  *    '  ''   ''  \n";
+	std::cout << "  ''    'v'' ' ''    ^   '  ^ '  '''   '    ''''     ^ '''  ^ ' '' ''  '''  ' v \n";
+	std::cout << "    ''    vV '''  VV  ''    V  ' '' 'VV '''   ' Vv''   '''' ' ''V   'V  v'    ' \n";
+	std::cout << " '  ''    '     '''   '' '    ''  vv      '  '     ''   ''     '    ' '   '''   \n";
+	std::cout << " ''-'-''-''-''-''''-''-'''-''''-''-'''-''''''-'-'''-''-'''-'-''-'''''-''-'-'''- \n";
 	std::cout << std::endl;
 	return;
 }
-
-void PrintHint()
+void Initialize()
 {
-	std::cout << "Here is a hint!\n\n";
-	std::cout << "Word length: " << BullCowGame.GetHiddenWordLength() << " letters.\n";
-	std::cout << "Description: " << BullCowGame.GetHiddenWordDescription() << "\n\n";
-	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
+	// variables
+	int32 WordLength = 0;
+
+	WordLength = AskWordLength();
+	BullCowGame.Initialize(WordLength, 5);
+
+	std::cout << std::endl;
 
 	return;
 }
-
+void PrintHint()
+{
+	std::cout << "Can you guess the " << BullCowGame.GetHiddenWordLength() << " isogram that I'm thinking of?\n\n";
+	std::cout << "     **********************************************************************     \n";
+	std::cout << "     *                            !!! HINT !!!                            *     \n";
+	std::cout << "     **********************************************************************     \n";
+	std::cout << "          LENGTH: " << BullCowGame.GetHiddenWordLength() << " letters.		  \n";
+	std::cout << "          DESCRIPTION: " << BullCowGame.GetHiddenWordDescription() << "		  \n";
+	std::cout << "     **********************************************************************     \n";
+	std::cout << std::endl;
+	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
+	return;
+}
 void RunGameLoop()
 {
 	// variables
@@ -114,9 +130,6 @@ void RunGameLoop()
 
 	do
 	{
-		// reset game
-		if (bPlayAgain) BullCowGame.Reset();
-
 		PrintHint();
 
 		// loop while is NOT won and there are still tries remaining
@@ -144,7 +157,6 @@ void RunGameLoop()
 
 	return;
 }
-
 FText GetValidGuess()
 {
 	// variables
@@ -182,7 +194,6 @@ FText GetValidGuess()
 
 	return Guess;
 }
-
 void PrintGuess(FText Guess)
 {
 	// print user input
@@ -191,7 +202,6 @@ void PrintGuess(FText Guess)
 
 	return;
 }
-
 void PrintGameSummary()
 {
 	std::cout << "The hidden word is: " << BullCowGame.GetHiddenWord() << "\n\n";
@@ -207,11 +217,10 @@ void PrintGameSummary()
 
 	return;
 }
-
 bool AskToPlayAgain()
 {
 	FText Response = "";
-	FText WordLength = "";
+	int32 WordLength = 0;
 
 	std::cout << "Do you want to play again(y/n)? ";
 	std::getline(std::cin, Response);
@@ -219,18 +228,21 @@ bool AskToPlayAgain()
 	if (tolower(Response[0]) == 'y')
 	{
 		WordLength = AskWordLength();
+		BullCowGame.Reset();
 		BullCowGame.SetUserIndicatedWordLength(WordLength);
+
 	}
 
 	std::cout << std::endl;
 
 	return (tolower(Response[0]) == 'y');
 }
-
-FText AskWordLength()
+int32 AskWordLength()
 {
 	// variables
-	FText WordLength;
+	FText WordLength = "";
+	int32 IWordLength = 0;
+
 	EWordLengthStatus WordLengthStatus = EWordLengthStatus::Invalid_Status;
 
 	do
@@ -245,16 +257,16 @@ FText AskWordLength()
 		case EWordLengthStatus::OK:
 			break;
 		case EWordLengthStatus::Not_In_Range:
-			std::cout << "The number you just entered is not in range, please enter another number.\n";
+			std::cout << "The number you just entered is not in range, please enter another number.\n\n";
 			break;
 		case EWordLengthStatus::Not_Number:
-			std::cout << "The input you just entered is not a number, please enter a number.\n";
+			std::cout << "The input you just entered is not a number, please enter a number.\n\n";
 			break;
 		case EWordLengthStatus::Has_White_Space:
-			std::cout << "The input you just entered has white space, please enter a number without white space.\n";
+			std::cout << "The input you just entered has white space, please enter a number without white space.\n\n";
 			break;
 		case EWordLengthStatus::No_Word_With_This_Length:
-			std::cout << "There is NO or NO MORE word with this length, please enter a different number.\n";
+			std::cout << "There is NO or NO MORE word with this length, please enter a different number.\n\n";
 			break;
 		default:
 			break;
@@ -262,7 +274,9 @@ FText AskWordLength()
 
 	} while (WordLengthStatus != EWordLengthStatus::OK);
 
-	return WordLength;
+	IWordLength = StringToInt32(WordLength);
+
+	return IWordLength;
 }
 
 void PrintWordsInDictionary() 
@@ -277,4 +291,20 @@ void PrintWordsInDictionary()
 	}
 	
 	return;
+}
+int32 StringToInt32(FString String)
+{
+	char* pEnd;
+	int32 Integer = (int32)std::strtol(String.c_str(), &pEnd, 10);
+
+	if (*pEnd)
+	{
+		// conversion fail
+		return -1;
+	}
+	else
+	{
+		// conversion success
+		return Integer;
+	}
 }

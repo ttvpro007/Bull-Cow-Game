@@ -32,5 +32,8 @@
     <ClInclude Include="CVSReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IncludeHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
