@@ -10,11 +10,11 @@ interaction. For game logic, see FBullCowGame class.
 #define FText std::string
 #define int32 int
 
-void PlayGame();
+void PlayGame(bool);
 void PrintIntroduction();
 void Initialize();
 void PrintHint();
-void RunGameLoop();
+void RunGameLoop(bool);
 FText GetValidGuess();
 void PrintGuess(FText);
 void PrintGameSummary();
@@ -44,7 +44,7 @@ int main()
 {
 	//PrintWordsInDictionary();
 	
-	PlayGame();
+	PlayGame(true);
 
 	/*for (size_t i = 0; i < 5; i++)
 	{
@@ -54,13 +54,13 @@ int main()
 	return 0; // exit application
 }
 
-void PlayGame()
+void PlayGame(bool IsDebugMode)
 {
 	PrintIntroduction();
 
 	Initialize();
 
-	RunGameLoop();
+	RunGameLoop(IsDebugMode);
 }
 void PrintIntroduction()
 {
@@ -148,7 +148,6 @@ void Initialize()
 }
 void PrintHint()
 {
-	std::cout << "Can you guess the \"" << BullCowGame.GetHiddenWordLength() << "\" isogram that I'm thinking of?\n\n";
 	std::cout << "    ***********************************************************************     \n";
 	std::cout << "    *                             !!! HINT !!!                            *     \n";
 	std::cout << "    ***********************************************************************     \n";
@@ -158,7 +157,7 @@ void PrintHint()
 	std::cout << std::endl;
 	return;
 }
-void RunGameLoop()
+void RunGameLoop(bool IsDebugMode)
 {
 	// variables
 	int32 MaxTries = BullCowGame.GetMaxTries();
@@ -175,6 +174,9 @@ void RunGameLoop()
 	bool bWantHint = false;
 
 	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
+
+	// debug mode for development process
+	if (IsDebugMode) std::cout << "[DEBUG MODE] The hidden word is [" << BullCowGame.GetHiddenWord() << "]\n\n";
 
 	do
 	{
@@ -367,15 +369,16 @@ bool AskIfWantHint()
 }
 EYesNoAnswerStatus CheckYesNoAnswerStatus(FString Answer)
 {
-	if (!IsYesOrNo(Answer))
-	{
-		std::cout << "Please enter Yes or No.\n\n";
-		return EYesNoAnswerStatus::Not_Yes_And_Not_No;
-	}
-	else if (IsFirstCharWhiteSpace(Answer))
+	
+	if (IsFirstCharWhiteSpace(Answer))
 	{
 		std::cout << "Please enter Yes or No without white space infront.\n\n";
 		return EYesNoAnswerStatus::First_Char_White_Space;
+	}
+	else if (!IsYesOrNo(Answer))
+	{
+		std::cout << "Please enter Yes or No.\n\n";
+		return EYesNoAnswerStatus::Not_Yes_And_Not_No;
 	}
 	else
 	{
