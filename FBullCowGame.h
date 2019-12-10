@@ -62,6 +62,7 @@ public:
 
 	int32 GetMaxTries() const;
 	int32 GetCurrentTry() const;
+	int32 GetTriesLeft() const;
 	FString GetHiddenWord() const;
 	FString GetHiddenWordDescription() const;
 	int32 GetHiddenWordLength() const;
@@ -74,9 +75,8 @@ public:
 	FBullCowCount SubmitValidGuess(FString);
 
 	EWordLengthStatus CheckWordLengthValidity(FString) const;
-	void SetUserIndicatedWordLength(int32);
 
-	void Reset(); // TODO make a more rich return value.
+	void Reset(int32); // TODO make a more rich return value.
 
 private:
 	// initialized int32 type variables in contructor
@@ -90,7 +90,6 @@ private:
 	int32 CurrentTry = 0;
 	int32 MaxTries = 0;
 	TMap<int32, TArray<FString>> IsogramDictionary;
-	int32 UserIndicatedWordLength;
 	TArray<FString> WordAndDescription;
 
 	// default initialization
@@ -110,7 +109,7 @@ private:
 	// remove element from AvailableIDAndLengthTable
 	void RemoveUsedIDAndLength(int32);
 
-	void ExceptionHandlerInt32LessThanZero(int32, FString) const;
+	int32 GetRandomInteger(int32, int32) const;
 	// output = -1 if cannot convert to integer
-	static int32 StringToInt32(FString);
+	int32 StringToInt32(FString) const;
 };

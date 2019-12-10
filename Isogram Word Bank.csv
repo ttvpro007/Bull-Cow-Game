@@ -26,7 +26,7 @@
 26,map,A diagrammatic representation of an area of land or sea showing physical features - landmark / cities / roads.
 27,net,A divice made of fabric or rope stitched together used to catch things such as fish / bug.
 28,new,Not existing before; made / introduced / discovered recently or now for the first time.
-29,oak,A tree that bears acorns as fruit and typically has lobed deciduous leaves.
+29,orc,Fantasy literature/games - a member of an imaginary race of humanlike creatures characterized as ugly; warlike; malevolent.
 30,ore,A naturally occurring solid material from which a metal or valuable mineral can be profitably extracted.
 31,pet,A domestic or tamed animal kept for companionship or pleasure.
 32,pun,A joke exploiting the the fact that there are words which sound alike but have different meanings.
@@ -42,10 +42,10 @@
 42,use,Take / hold / deploy (something) as a means of accomplishing a purpose or achieving a result; employ.
 43,vow,A solemn promise.
 44,vet,Make a careful and critical examination of (something).
-45,web,A network of fine threads constructed by a spider from fluid secreted by its spinnerets used to catch its prey.
+45,war,A state of armed conflict between different nations or states or different groups within a nation or state.
 46,wok,A bowl-shaped frying pan used typically in Chinese cooking.
 47,xis,The fourteenth letter of the Greek alphabet.
-48,yin,In Chinese philosophy - the passive female principle of the universe associated with earth; dark; and cold.
+48,yin,(Chinese philosophy) the passive female principle of the universe associated with earth; dark; and cold.
 49,yak,A large domesticated wild ox with shaggy hair; humped shoulders; and large horns.
 50,zap,Destroy or obliterate.
 51,zip,Move at high speed.
@@ -53,5 +53,77 @@
 53,ache,A continuous or prolonged dull pain in a part of one's body.
 54,blue,Of a color intermediate between green and violet as of the sky or sea on a sunny day.
 55,byte,A group of binary digits or bits (usually eight) operated on as a unit.
-56,blacksmith,A person who makes and repairs things in iron by hand.
-57,binoculars,An optical instrument with a lens for each eye used for viewing distant objects.
+56,cake,An item of soft sweet food made from a mixture of flour; shortening; eggs; sugar; and other ingredients
+57,club,An association or organization dedicated to a particular interest or activity.
+58,daze,A state of stunned confusion or bewilderment.
+59,dunk,Score by shooting the ball down through the basket with the hands above the rim.
+60,epic,Heroic or grand in scale or character. (Informal) Particularly impressive or remarkable.
+61,expo,A large exhibition.
+62,fate,The development of events beyond a person's control regarded as determined by a supernatural power.
+63,folk,People in general.
+64,game,A form of play or sport especially a competitive one played according to rules and decided by skill; strength; or luck.
+65,gyre,A spiral or vortex.
+66,hack,Cut with rough or heavy blows.
+67,hymn,A religious song or poem of praise to a god.
+68,iron,A strong; hard magnetic silvery-gray metal; the chemical element of atomic number 26
+69,item,An individual article or unit; especially one that is part of a list; collection; or set.
+70,jean,Heavy twilled cotton cloth especially denim.
+71,judo,A sport of unarmed combat derived from jujitsu. It involves using holds and leverage to unbalance the opponent.
+72,kale,A hardy cabbage of a variety which produces erect stems with large leaves and no compact head.
+73,khan,A title given to rulers and officials in central Asia; Afghanistan; and certain other Muslim countries.
+74,leap,Jump or spring a long way; to a great height; or with great force.
+75,lion,A large tawny-colored cat that lives in prides found in Africa and northwestern India.
+76,mage,An entity who wield magical power.
+77,maze,A network of paths and hedges designed as a puzzle through which one has to find a way.
+78,news,Newly received or noteworthy information especially about recent or important events.
+79,nuke,A nuclear weapon.
+80,oink,The characteristic grunting sound of a pig.
+81,orca,A large toothed whale with distinctive black-and-white markings and a prominent dorsal fin.
+82,peak,"Reach a highest point, either of a specified value or at a specified time."
+83,pink,Of a color intermediate between red and white as of coral or salmon.
+84,quad,Characteristic of quadruple or quadraphonic.
+85,quiz,A test of knowledge especially a brief; informal test given to students.
+86,rich,Plentiful; abundant.
+87,rose,A flower that is widely given as simbol of romantic and love
+88,sour,Having an acid taste like lemon or vinegar.
+89,sumo,A Japanese form of heavyweight wrestling.
+90,tame,Domesticate (an animal).
+91,thou,Archaic or dialect form of you; as the singular subject of a verb.
+92,unto,Archaic term for to/until.
+93,user,A person who uses or operates something especially a computer or other machine.
+94,visa,An endorsement on a passport allowing the holder to enter/leave/stay for a specified period of time in a country.
+95,void,Completely empty.
+96,wine,An alcoholic drink made from fermented grape juice.
+97,wick,A strip of porous material up which liquid fuel is drawn by capillary action to the flame in a candle/lamp/lighter.
+98,xyst,"(Ancient Greek and Roman architecture) acovered portico, as a promenade. A garden walk planted with trees."
+99,yoda,A small and green humanoid alien first appearing in the 1980 film The Empire Strikes Back.
+100,yurt,A circular tent of felt or skins on a collapsible framework used by nomads in Mongolia - Siberia - Turkey.
+101,zest,Scrape off the outer colored part of the peel of (a piece of citrus fruit) for use as flavoring.
+102,zeal,Great energy or enthusiasm in pursuit of a cause or an objective.
+103,abhor,Regard with disgust and hatred.
+104,bento,A lacquered or decorated wooden Japanese lunchbox.
+105,cabin,A small shelter or house made of wood and situated in a wild or remote area.
+106,dairy,Containing or made from milk.
+107,earth,The third planet in the Solar System.
+108,fakir,A Muslim (or loosely a Hindu) religious ascetic who lives solely on alms.
+109,ghoul,An evil spirit or phantom especially one supposed to rob graves and feed on dead bodies.
+110,harpy,A rapacious monster described as having a woman's head and body of a bird with wings and claws.
+111,ingot,A block of steel/gold/silver/other metal in a typically oblong shape.
+112,joker,A person who is fond of joking.
+113,kendo,A Japanese form of fencing with two-handed bamboo swords.
+114,largo,A passage/movement/composition marked to be performed in a slow tempo and with a dignified style.
+115,magic,The power of apparently influencing the course of events by using mysterious or supernatural forces.
+116,neigh,A characteristic high-pitched sound uttered by a horse.
+117,odium,General or widespread hatred or disgust directed toward someone as a result of their actions.
+118,pilot,A person who operates the flying controls of an aircraft.
+119,quart,A unit of liquid capacity equal to a quarter of a gallon or two pints.
+120,rumba,A rhythmic dance with Spanish and African elements originating in Cuba.
+121,saber,A heavy cavalry sword with a curved blade and a single cutting edge.
+122,tenor,A singing voice between baritone and alto or countertenor. The highest of the ordinary adult male range.
+123,urban,In/relating to/characteristic of a town or city.
+124,vegan,A person who does not eat or use animal products.
+125,wagon,A vehicle used for transporting goods or another specified purpose.
+126,xeric,(of an environment or habitat) containing little moisture; very dry.
+127,yatch,A medium-sized sailboat equipped for cruising or racing.
+128,zebra,An African wild horse with black-and-white stripes and an erect mane.
+129,blacksmith,A person who makes and repairs things in iron by hand.

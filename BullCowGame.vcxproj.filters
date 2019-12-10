@@ -24,15 +24,18 @@
     <ClCompile Include="CVSFileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FBullCowGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IncludeHeader.h">
+    <ClInclude Include="CVSFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CVSFileManager.h">
+    <ClInclude Include="GameManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

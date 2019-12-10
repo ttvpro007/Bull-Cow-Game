@@ -57,7 +57,7 @@ void CVSFileManager::WriteFile(FString FileName, TArray<FString> CSVData)
 	{
 		if (*Iterator != CSVData.back())
 		{
-			FOut << *Iterator << '\n';
+			FOut << *Iterator << "\n";
 		}
 		else
 		{

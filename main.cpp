@@ -4,7 +4,7 @@ This acts as the view in a MVC pattern, and is responsible for all user
 interaction. For game logic, see FBullCowGame class.
 */
 
-#include "IncludeHeader.h"
+#include "GameManager.h"
 #include "FBullCowGame.h"
 
 #define FText std::string
@@ -16,29 +16,40 @@ void Initialize();
 void PrintHint();
 void RunGameLoop();
 FText GetValidGuess();
-void PrintGuess(FText Guess);
+void PrintGuess(FText);
 void PrintGameSummary();
 bool AskToPlayAgain();
 int32 AskWordLength();
+bool AskIfWantHint();
+EYesNoAnswerStatus CheckYesNoAnswerStatus(FString);
+
+bool IsYesOrNo(FString);
+bool IsFirstCharWhiteSpace(FString);
 
 void PrintWordsInDictionary();
 static int32 StringToInt32(FString);
+
+int32 GetRandomInteger(int32, int32);
 
 void TEST_CSVFileWrite();
 
 //static FBullCowGame BullCowGame(3);
 FBullCowGame BullCowGame;
 
+static std::default_random_engine RandomGenerator;
+
+
+
 int main()
 {
 	//PrintWordsInDictionary();
 	
-	//PlayGame();
+	PlayGame();
 
-	for (size_t i = 0; i < 5; i++)
+	/*for (size_t i = 0; i < 5; i++)
 	{
 		TEST_CSVFileWrite();
-	}
+	}*/
 
 	return 0; // exit application
 }
@@ -118,6 +129,9 @@ void PrintIntroduction()
 	std::cout << "    *                                                                     *     \n";
 	std::cout << "    ***********************************************************************     \n";
 	std::cout << std::endl;
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "    *                     -~~:+|    NEW GAME    |+:~~-                    *     \n";
+	std::cout << "    ***********************************************************************     \n";
 	return;
 }
 void Initialize()
@@ -142,7 +156,6 @@ void PrintHint()
 	std::cout << "         DESCRIPTION: " << BullCowGame.GetHiddenWordDescription() << "		  \n";
 	std::cout << "    ***********************************************************************     \n";
 	std::cout << std::endl;
-	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
 	return;
 }
 void RunGameLoop()
@@ -151,11 +164,21 @@ void RunGameLoop()
 	int32 MaxTries = BullCowGame.GetMaxTries();
 	FText Guess = "";
 
+	// will ask player when he/she has the number of turn(s) left that is within the MIN and MAX_TURN_FOR_HINT
+	// if they need a hint
+	constexpr int32 MIN_TURN_FOR_HINT = 1;
+	constexpr int32 MAX_TURN_FOR_HINT = 3;
+	int32 RandomTurnForHint = 0;
+	int32 TriesLeft = 0;
+
 	bool bPlayAgain = false;
+	bool bWantHint = false;
+
+	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
 
 	do
 	{
-		PrintHint();
+		RandomTurnForHint = GetRandomInteger(MIN_TURN_FOR_HINT, MAX_TURN_FOR_HINT);
 
 		// loop while is NOT won and there are still tries remaining
 		while (!BullCowGame.IsGameWon() && BullCowGame.GetCurrentTry() <= MaxTries)
@@ -169,6 +192,19 @@ void RunGameLoop()
 			std::cout << "   COWS [" << BullCowCount.Cow << "]\n";
 
 			PrintGuess(Guess);
+
+			TriesLeft = BullCowGame.GetTriesLeft();
+			// ask if want hint when tries left equals one of the number within the MIN MAX range
+			// see the constexpr above for clarification
+			if (TriesLeft == RandomTurnForHint)
+			{
+				bWantHint = AskIfWantHint();
+
+				if (bWantHint)
+				{
+					PrintHint();
+				}
+			}
 		}
 
 		// print end game message
@@ -247,15 +283,21 @@ bool AskToPlayAgain()
 	FText Response = "";
 	int32 WordLength = 0;
 
-	std::cout << "Do you want to play again(y/n)? ";
-	std::getline(std::cin, Response);
+	EYesNoAnswerStatus AnswerStatus = EYesNoAnswerStatus::Invalid_Status;
+
+	do
+	{
+		std::cout << "Do you want to play again (y/n)? ";
+		std::getline(std::cin, Response);
+
+		AnswerStatus = CheckYesNoAnswerStatus(Response);
+
+	} while (AnswerStatus != EYesNoAnswerStatus::OK);
 
 	if (tolower(Response[0]) == 'y')
 	{
 		WordLength = AskWordLength();
-		BullCowGame.Reset();
-		BullCowGame.SetUserIndicatedWordLength(WordLength);
-
+		BullCowGame.Reset(WordLength);
 	}
 
 	std::cout << std::endl;
@@ -303,6 +345,69 @@ int32 AskWordLength()
 
 	return IWordLength;
 }
+bool AskIfWantHint()
+{
+	FText Response = "";
+
+	std::cout << "You have " << BullCowGame.GetTriesLeft() << " tries left\n";
+	std::cout << "You can ask for a hint this round.\n";
+
+	EYesNoAnswerStatus AnswerStatus = EYesNoAnswerStatus::Invalid_Status;
+
+	do
+	{
+		std::cout << "Do you want a hint for this isogram (y/n)?";
+		std::getline(std::cin, Response);
+
+		AnswerStatus = CheckYesNoAnswerStatus(Response);
+
+	} while (AnswerStatus != EYesNoAnswerStatus::OK);
+
+	return (tolower(Response[0]) == 'y');
+}
+EYesNoAnswerStatus CheckYesNoAnswerStatus(FString Answer)
+{
+	if (!IsYesOrNo(Answer))
+	{
+		std::cout << "Please enter Yes or No.\n\n";
+		return EYesNoAnswerStatus::Not_Yes_And_Not_No;
+	}
+	else if (IsFirstCharWhiteSpace(Answer))
+	{
+		std::cout << "Please enter Yes or No without white space infront.\n\n";
+		return EYesNoAnswerStatus::First_Char_White_Space;
+	}
+	else
+	{
+		return EYesNoAnswerStatus::OK;
+	}
+
+}
+
+bool IsYesOrNo(FString Word)
+{
+	char FirstChar = Word[0];
+
+	if (tolower(FirstChar) != 'y' && tolower(FirstChar) != 'n')
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+bool IsFirstCharWhiteSpace(FString Word)
+{
+	char Letter = Word[0]; 
+
+	if (Letter == ' ') // if is blank space
+	{
+		return true; // has white space
+	}
+
+	return false;
+}
 
 void PrintWordsInDictionary() 
 {
@@ -332,6 +437,14 @@ int32 StringToInt32(FString String)
 		// conversion success
 		return Integer;
 	}
+}
+
+int32 GetRandomInteger(int32 Min, int32 Max)
+{
+	int32 RandomNumber = 0;
+	RandomGenerator.seed((unsigned int)std::chrono::steady_clock::now().time_since_epoch().count());
+	std::uniform_int_distribution<int32> RandomIntegerDistribution(Min, Max);
+	return RandomNumber = RandomIntegerDistribution(RandomGenerator);
 }
 
 void TEST_CSVFileWrite()
