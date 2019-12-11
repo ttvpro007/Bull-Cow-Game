@@ -43,22 +43,14 @@ enum class EWordLengthStatus
 class FBullCowGame
 {
 public:
-	//// constructor
-	//FBullCowGame();
-	//// constructor that takes max tries
-	//FBullCowGame(int32);
-	//// constructor that takes word length and max tries
-	//FBullCowGame(int32, int32);
 
 	FBullCowGame(); // constructor
 	~FBullCowGame(); // destructor
 
 	// initializer
 	void Initialize();
-	// initializer that takes max tries
+	// initializer that takes word length
 	void Initialize(int32);
-	// initializer that takes word length and max tries
-	void Initialize(int32, int32);
 
 	int32 GetMaxTries() const;
 	int32 GetCurrentTry() const;
@@ -66,15 +58,18 @@ public:
 	FString GetHiddenWord() const;
 	FString GetHiddenWordDescription() const;
 	int32 GetHiddenWordLength() const;
-
-	bool IsGameWon() const;
+	FString GetHint();
 	TMap<int32, TArray<FString>> GetDictionary() const;
 
-	EGuessStatus CheckGuessValidity(FString) const;
-	// counts bulls and cows and increases turn # assuming valid guess
-	FBullCowCount SubmitValidGuess(FString);
+	bool IsGameWon() const;
+	bool HasShownAllLetters() const;
 
+	// status checkers
+	EGuessStatus CheckGuessValidity(FString) const;
 	EWordLengthStatus CheckWordLengthValidity(FString) const;
+	
+	// counts bulls and cows and increases turn #
+	FBullCowCount SubmitValidGuess(FString); // TODO move current try and its incement to game manager
 
 	void Reset(int32); // TODO make a more rich return value.
 
@@ -85,6 +80,8 @@ private:
 	int32 MinLength;
 	int32 MaxLength;
 	TMap<int32, int32> AvailableIDAndLengthTable;
+	TArray<char> Hint;
+	TArray<char> HintLettersShown; // Not initialized in helper function
 
 	// method initialization
 	int32 CurrentTry = 0;
@@ -101,15 +98,18 @@ private:
 
 	TMap<int32, TArray<FString>> GetIsogramDictionaryFromFile(FString);
 	TArray<FString> GetWordAndDescriptionFromDictionary(int32, TMap<int32, TArray<FString>>);
+	int32 CalculateMaxTries(int32);
 
 	void InitializingSomePrivateVariables(int32, int32);
+	void InitializeHintSystem(int32);
 
 	bool IsIDAvailable(int32) const;
 	bool IsLengthAvalable(int32) const;
+	bool IsHintLetterShown(char) const;
 	// remove element from AvailableIDAndLengthTable
 	void RemoveUsedIDAndLength(int32);
 
-	int32 GetRandomInteger(int32, int32) const;
-	// output = -1 if cannot convert to integer
-	int32 StringToInt32(FString) const;
+	int32 GetRandomInteger(int32, int32) const; // return Min if Min == Max
+	int32 StringToInt32(FString) const; // output = -1 if cannot convert to integer
+	FString TArrayOfCharToString(TArray<char>); // output = "" if array was not populated
 };

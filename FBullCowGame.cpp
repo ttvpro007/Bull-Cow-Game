@@ -5,30 +5,25 @@ FBullCowGame::FBullCowGame()
 	IsogramDictionary(GetIsogramDictionaryFromFile("Isogram Word Bank.csv"))
 {
 }
-
 FBullCowGame::~FBullCowGame()
 {
 }
 
 void FBullCowGame::Initialize()
 {
-	CurrentTry = 1;
-	MaxTries = 3;
 	WordAndDescription = GetWordAndDescriptionFromDictionary(0, IsogramDictionary);
-}
-
-void FBullCowGame::Initialize(int32 MaxTries)
-{
 	CurrentTry = 1;
-	this->MaxTries = MaxTries;
-	WordAndDescription = GetWordAndDescriptionFromDictionary(0, IsogramDictionary);
-}
+	MaxTries = CalculateMaxTries((int32)WordAndDescription[0].length());
+	InitializeHintSystem((int32)WordAndDescription[0].size());
 
-void FBullCowGame::Initialize(int32 WordLength, int32 MaxTries)
+	return;
+}
+void FBullCowGame::Initialize(int32 WordLength)
 {
-	CurrentTry = 1;
-	this->MaxTries = MaxTries;
 	WordAndDescription = GetWordAndDescriptionFromDictionary(WordLength, IsogramDictionary);
+	CurrentTry = 1;
+	this->MaxTries = CalculateMaxTries((int32)WordAndDescription[0].length());
+	InitializeHintSystem(WordLength);
 
 	return;
 }
@@ -42,8 +37,44 @@ int32 FBullCowGame::GetTriesLeft() const
 FString FBullCowGame::GetHiddenWord() const { return WordAndDescription[0]; }
 FString FBullCowGame::GetHiddenWordDescription() const { return WordAndDescription[1]; }
 int32 FBullCowGame::GetHiddenWordLength() const { return (int32)WordAndDescription[0].length(); }
-bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
+FString FBullCowGame::GetHint()
+{
+	FString HintWord = "";
+	char Letter = ' ';
+	int32 Index = 0;
+
+
+	// if had shown all letters return blank
+	if (!HasShownAllLetters())
+	{
+		do
+		{
+			// randomized index
+			Index = GetRandomInteger(0, Hint.size() - 1);
+			// get letter from word at randomized index
+			Letter = WordAndDescription[0][Index];
+
+		} while (IsHintLetterShown(Letter));
+
+		// populate hint letter shown
+		HintLettersShown.push_back(Letter);
+
+		// replace "_" with a random letter taken from hidden word
+		Hint[Index] = Letter;
+	}
+
+	// populate the hint word
+	HintWord = TArrayOfCharToString(Hint);
+	
+	return HintWord;
+}
 TMap<int32, TArray<FString>> FBullCowGame::GetDictionary() const { return IsogramDictionary; }
+
+bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
+bool FBullCowGame::HasShownAllLetters() const
+{
+	return HintLettersShown.size() == Hint.size();
+}
 
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
@@ -64,6 +95,33 @@ EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 		return EGuessStatus::OK;
 	}
 }
+EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength) const
+{
+	// will return -1 if cannot conver to integer
+	int32 IWordLength = StringToInt32(WordLength);
+
+	if (HasWhiteSpace(WordLength))
+	{
+		return EWordLengthStatus::Has_White_Space;
+	}
+	else if (IWordLength == -1)
+	{
+		return EWordLengthStatus::Not_Number;
+	}
+	else if (IWordLength > MaxLength || IWordLength < MinLength)
+	{
+		return EWordLengthStatus::Not_In_Range;
+	}
+	else if (!IsLengthAvalable(IWordLength))
+	{
+		return EWordLengthStatus::No_Word_With_This_Length;
+	}
+	else
+	{
+		return EWordLengthStatus::OK;
+	}
+}
+
 FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 {// received a valid guess, increments turn and returns counts
 
@@ -105,38 +163,12 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 	return BullCowCount;
 }
 
-EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength) const
-{
-	// will return -1 if cannot conver to integer
-	int32 IWordLength = StringToInt32(WordLength);
-
-	if (HasWhiteSpace(WordLength))
-	{
-		return EWordLengthStatus::Has_White_Space;
-	}
-	else if (IWordLength == -1)
-	{
-		return EWordLengthStatus::Not_Number;
-	}
-	else if (IWordLength > MaxLength|| IWordLength < MinLength)
-	{
-		return EWordLengthStatus::Not_In_Range;
-	}
-	else if (!IsLengthAvalable(IWordLength))
-	{
-		return EWordLengthStatus::No_Word_With_This_Length;
-	}
-	else
-	{
-		return EWordLengthStatus::OK;
-	}
-}
-
 void FBullCowGame::Reset(int32 WordLength)
 {
 	CurrentTry = 1;
 	bIsGameWon = false;
-	WordAndDescription = GetWordAndDescriptionFromDictionary(WordLength, IsogramDictionary); // TODO should take in word length
+	WordAndDescription = GetWordAndDescriptionFromDictionary(WordLength, IsogramDictionary);
+	InitializeHintSystem(WordLength);
 
 	return;
 }
@@ -274,12 +306,17 @@ TArray<FString> FBullCowGame::GetWordAndDescriptionFromDictionary(int32 WordLeng
 
 	return WordAndDescription;
 }
+int32 FBullCowGame::CalculateMaxTries(int32 WordLength)
+{
+	return WordLength * 2;
+}
 
 void FBullCowGame::InitializingSomePrivateVariables(int32 ID, int32 WordLength)
 {
+	// 1. populate available ID and length table
 	AvailableIDAndLengthTable.insert({ ID, WordLength });
 
-	// find min and max value
+	// 2. find min and max value
 	if (ID == 1)
 	{
 		MinLength = WordLength;
@@ -288,6 +325,19 @@ void FBullCowGame::InitializingSomePrivateVariables(int32 ID, int32 WordLength)
 
 	if (WordLength < MinLength) MinLength = WordLength;
 	if (WordLength > MaxLength) MaxLength = WordLength;
+
+	return;
+}
+void FBullCowGame::InitializeHintSystem(int32 WordLength)
+{
+	Hint.clear();
+	HintLettersShown.clear();
+
+	// initialized all letters in hint to "_"
+	for (size_t i = 0; i < WordLength; i++)
+	{
+		Hint.push_back('_');
+	}
 
 	return;
 }
@@ -324,6 +374,15 @@ bool FBullCowGame::IsLengthAvalable(int32 WordLength) const
 	// length not available
 	return false;
 }
+bool FBullCowGame::IsHintLetterShown(char Letter) const
+{
+	for (auto HLetter : HintLettersShown)
+	{
+		if (Letter == HLetter) return true;
+	}
+
+	return false;
+}
 void FBullCowGame::RemoveUsedIDAndLength(int32 ID)
 {
 	AvailableIDAndLengthTable.erase(ID);
@@ -332,6 +391,7 @@ void FBullCowGame::RemoveUsedIDAndLength(int32 ID)
 int32 FBullCowGame::GetRandomInteger(int32 Min, int32 Max) const
 {
 	int32 RandomInteger = 0;
+	if (Min == Max) return Min;
 	std::default_random_engine RandomGenerator;
 	RandomGenerator.seed((unsigned int)std::chrono::steady_clock::now().time_since_epoch().count());
 	std::uniform_int_distribution<int32> RandomDistribution(Min, Max);
@@ -351,5 +411,16 @@ int32 FBullCowGame::StringToInt32(FString String) const
 	{
 		// conversion success
 		return Integer;
+	}
+}
+FString FBullCowGame::TArrayOfCharToString(TArray<char> ArrayOfChar)
+{
+	if (ArrayOfChar.size() > 0)
+	{
+		return FString(ArrayOfChar.begin(), ArrayOfChar.end());
+	}
+	else
+	{
+		return FString("");
 	}
 }

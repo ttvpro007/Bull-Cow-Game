@@ -20,6 +20,7 @@ void PrintGuess(FText);
 void PrintGameSummary();
 bool AskToPlayAgain();
 int32 AskWordLength();
+bool IsEligibleForHint(int32, int32);
 bool AskIfWantHint();
 EYesNoAnswerStatus CheckYesNoAnswerStatus(FString);
 
@@ -44,15 +45,12 @@ int main()
 {
 	//PrintWordsInDictionary();
 	
-	PlayGame(true);
+	PlayGame(false);
 
 	/*for (size_t i = 0; i < 5; i++)
 	{
 		TEST_CSVFileWrite();
 	}*/
-
-	
-	// GitHub
 
 	return 0; // exit application
 }
@@ -143,7 +141,7 @@ void Initialize()
 	int32 WordLength = 0;
 
 	WordLength = AskWordLength();
-	BullCowGame.Initialize(WordLength, 5);
+	BullCowGame.Initialize(WordLength);
 
 	std::cout << std::endl;
 
@@ -154,8 +152,9 @@ void PrintHint()
 	std::cout << "    ***********************************************************************     \n";
 	std::cout << "    *                             !!! HINT !!!                            *     \n";
 	std::cout << "    ***********************************************************************     \n";
-	std::cout << "         LENGTH: " << BullCowGame.GetHiddenWordLength() << " letters.			  \n";
-	std::cout << "         DESCRIPTION: " << BullCowGame.GetHiddenWordDescription() << "		  \n";
+	//std::cout << "         LENGTH: " << BullCowGame.GetHiddenWordLength() << " letters.			  \n";
+	//std::cout << "         DESCRIPTION: " << BullCowGame.GetHiddenWordDescription() << "		  \n";
+	std::cout << "         HIDDEN LETTER(S): " << BullCowGame.GetHint() << "		  \n";
 	std::cout << "    ***********************************************************************     \n";
 	std::cout << std::endl;
 	return;
@@ -165,6 +164,7 @@ void RunGameLoop(bool IsDebugMode)
 	// variables
 	int32 MaxTries = BullCowGame.GetMaxTries();
 	FText Guess = "";
+	int32 TimesHinted = 0;
 
 	// will ask player when he/she has the number of turn(s) left that is within the MIN and MAX_TURN_FOR_HINT
 	// if they need a hint
@@ -172,18 +172,20 @@ void RunGameLoop(bool IsDebugMode)
 	constexpr int32 MAX_TURN_FOR_HINT = 3;
 	int32 RandomTurnForHint = 0;
 	int32 TriesLeft = 0;
+	int32 WordLength = 0;
 
 	bool bPlayAgain = false;
 	bool bWantHint = false;
 
 	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
 
-	// debug mode for development process
-	if (IsDebugMode) std::cout << "[DEBUG MODE] The hidden word is [" << BullCowGame.GetHiddenWord() << "]\n\n";
-
 	do
 	{
 		RandomTurnForHint = GetRandomInteger(MIN_TURN_FOR_HINT, MAX_TURN_FOR_HINT);
+		WordLength = BullCowGame.GetHiddenWordLength();
+
+		// debug mode for development process
+		if (IsDebugMode) std::cout << "[DEBUG MODE] The hidden word is [" << BullCowGame.GetHiddenWord() << "]\n\n";
 
 		// loop while is NOT won and there are still tries remaining
 		while (!BullCowGame.IsGameWon() && BullCowGame.GetCurrentTry() <= MaxTries)
@@ -201,13 +203,15 @@ void RunGameLoop(bool IsDebugMode)
 			TriesLeft = BullCowGame.GetTriesLeft();
 			// ask if want hint when tries left equals one of the number within the MIN MAX range
 			// see the constexpr above for clarification
-			if (TriesLeft == RandomTurnForHint)
+			//if (TriesLeft == RandomTurnForHint)
+			if (!BullCowGame.HasShownAllLetters() && IsEligibleForHint(TimesHinted, WordLength))
 			{
 				bWantHint = AskIfWantHint();
 
 				if (bWantHint)
 				{
 					PrintHint();
+					TimesHinted++;
 				}
 			}
 		}
@@ -350,18 +354,18 @@ int32 AskWordLength()
 
 	return IWordLength;
 }
+bool IsEligibleForHint(int32 NumberOfHintLetterShown, int32 MaxHintTimes)
+{
+	return NumberOfHintLetterShown < MaxHintTimes;
+}
 bool AskIfWantHint()
 {
 	FText Response = "";
-
-	std::cout << "You have " << BullCowGame.GetTriesLeft() << " tries left\n";
-	std::cout << "You can ask for a hint this round.\n";
-
 	EYesNoAnswerStatus AnswerStatus = EYesNoAnswerStatus::Invalid_Status;
 
 	do
 	{
-		std::cout << "Do you want a hint for this isogram (y/n)?";
+		std::cout << "Too hard? Do you want to reveal a letter for this word (y/n)? ";
 		std::getline(std::cin, Response);
 
 		AnswerStatus = CheckYesNoAnswerStatus(Response);
@@ -372,7 +376,6 @@ bool AskIfWantHint()
 }
 EYesNoAnswerStatus CheckYesNoAnswerStatus(FString Answer)
 {
-	
 	if (IsFirstCharWhiteSpace(Answer))
 	{
 		std::cout << "Please enter Yes or No without white space infront.\n\n";
@@ -387,7 +390,6 @@ EYesNoAnswerStatus CheckYesNoAnswerStatus(FString Answer)
 	{
 		return EYesNoAnswerStatus::OK;
 	}
-
 }
 
 bool IsYesOrNo(FString Word)
