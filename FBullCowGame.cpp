@@ -1,7 +1,8 @@
 #include "FBullCowGame.h"
 
 FBullCowGame::FBullCowGame()
-	: CurrentTry(0), MaxTries(0), MinLength(0), MaxLength(0),
+	: CurrentTry(0), MaxTries(0), MinLength(0), MaxLength(0), MaxHint(0),
+	AIName("[GAME MASTER]"),
 	IsogramDictionary(GetIsogramDictionaryFromFile("Isogram Word Bank.csv"))
 {
 }
@@ -11,18 +12,22 @@ FBullCowGame::~FBullCowGame()
 
 void FBullCowGame::Initialize()
 {
-	WordAndDescription = GetWordAndDescriptionFromDictionary(0, IsogramDictionary);
+	WordAndDefinition = GetWordAndDefinitionFromDictionary(0, IsogramDictionary);
 	CurrentTry = 1;
-	MaxTries = CalculateMaxTries((int32)WordAndDescription[0].length());
-	InitializeHintSystem((int32)WordAndDescription[0].size());
+	MaxTries = CalculateMaxTries(WordAndDefinition[0].length());
+	CurrentHint = 1;
+	MaxHint = CalculateMaxHint(WordAndDefinition[0].length());
+	InitializeHintSystem((int32)WordAndDefinition[0].size());
 
 	return;
 }
 void FBullCowGame::Initialize(int32 WordLength)
 {
-	WordAndDescription = GetWordAndDescriptionFromDictionary(WordLength, IsogramDictionary);
+	WordAndDefinition = GetWordAndDefinitionFromDictionary(WordLength, IsogramDictionary);
 	CurrentTry = 1;
-	this->MaxTries = CalculateMaxTries((int32)WordAndDescription[0].length());
+	this->MaxTries = CalculateMaxTries((int32)WordAndDefinition[0].length());
+	CurrentHint = 1;
+	MaxHint = CalculateMaxHint(WordAndDefinition[0].length());
 	InitializeHintSystem(WordLength);
 
 	return;
@@ -34,9 +39,9 @@ int32 FBullCowGame::GetTriesLeft() const
 {
 	return MaxTries - CurrentTry + 1;
 }
-FString FBullCowGame::GetHiddenWord() const { return WordAndDescription[0]; }
-FString FBullCowGame::GetHiddenWordDescription() const { return WordAndDescription[1]; }
-int32 FBullCowGame::GetHiddenWordLength() const { return (int32)WordAndDescription[0].length(); }
+FString FBullCowGame::GetHiddenWord() const { return WordAndDefinition[0]; }
+FString FBullCowGame::GetHiddenWordDefinition() const { return WordAndDefinition[1]; }
+int32 FBullCowGame::GetHiddenWordLength() const { return (int32)WordAndDefinition[0].length(); }
 FString FBullCowGame::GetHint()
 {
 	FString HintWord = "";
@@ -52,7 +57,7 @@ FString FBullCowGame::GetHint()
 			// randomized index
 			Index = GetRandomInteger(0, Hint.size() - 1);
 			// get letter from word at randomized index
-			Letter = WordAndDescription[0][Index];
+			Letter = WordAndDefinition[0][Index];
 
 		} while (IsHintLetterShown(Letter));
 
@@ -73,6 +78,10 @@ TArray<FString> FBullCowGame::Command_Expr() const
 {
 	return COMMAND_EXPR;
 }
+FString FBullCowGame::GetAIName() const
+{
+	return AIName;
+}
 void FBullCowGame::PrintCommandList() const
 {
 	std::cout << "\n*************\n";
@@ -82,6 +91,18 @@ void FBullCowGame::PrintCommandList() const
 		std::cout << Command << "\n";
 	}
 	std::cout << "*************\n";
+	std::cout << std::endl;
+}
+
+void FBullCowGame::PrintCommandListAndDescription() const
+{
+	std::cout << "\n*******************************************\n";
+	std::cout << "COMMAND LIST:\n";
+	std::cout << "hint - revealing a letter in the hidden word\n";
+	std::cout << "giveup - give up the round\n";
+	std::cout << "exit - quit the program\n";
+	std::cout << "command list - print available command list\n";
+	std::cout << "*******************************************\n";
 	std::cout << std::endl;
 }
 
@@ -156,16 +177,30 @@ void FBullCowGame::ExecuteCommand(FString Command)
 	switch (CommandAction)
 	{
 	case ECommandAction::Invalid:
-		std::cout << "Command Invalid\n\n";
+		std::cout << AIName;
+		std::cout << ": Command Invalid.\n\n";
 		break;
-	case ECommandAction::Help:
-		PrintCommandList();
+	case ECommandAction::Hint:
+		std::cout << AIName;
+		if (IsEligibleForHint())
+		{
+			std::cout << ": You used " << CurrentHint << " of " << MaxHint << " hints.\n";
+			std::cout << AIName << ": Hint letter(s) - " << GetHint() << "\n\n";
+			CurrentHint++;
+		}
+		else
+		{
+			std::cout << ": You have exhausted your " << MaxHint << " hints.\n\n";
+		}
 		break;
 	case ECommandAction::Exit:
 		exit(0);
 		break;
 	case ECommandAction::Give_Up:
 		bIsGivingUp = true;
+		break;
+	case ECommandAction::Command_List:
+		PrintCommandList();
 		break;
 	default:
 		break;
@@ -186,7 +221,7 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 		for (int32 j = 0; j < WordLength; j++)
 		{
 			// compare if same letter same place (bull)
-			if (tolower(Guess[i]) == WordAndDescription[0][j])
+			if (tolower(Guess[i]) == WordAndDefinition[0][j])
 			{
 				if (i == j) // if same spot
 				{
@@ -217,9 +252,11 @@ void FBullCowGame::Reset(int32 WordLength)
 {
 	bIsGameWon = false;
 	bIsGivingUp = false;
-	WordAndDescription = GetWordAndDescriptionFromDictionary(WordLength, IsogramDictionary);
+	WordAndDefinition = GetWordAndDefinitionFromDictionary(WordLength, IsogramDictionary);
 	CurrentTry = 1;
 	MaxTries = CalculateMaxTries(WordLength);
+	CurrentHint = 1;
+	MaxHint = CalculateMaxHint(WordLength);
 	InitializeHintSystem(WordLength);
 
 	return;
@@ -228,9 +265,10 @@ void FBullCowGame::Reset(int32 WordLength)
 // helper functions
 ECommandAction FBullCowGame::GetCommandAction(FString Command) const
 {
-	if (Command == "help") return ECommandAction::Help;
+	if (Command == "hint") return ECommandAction::Hint;
 	else if (Command == "giveup") return ECommandAction::Give_Up;
 	else if (Command == "exit") return ECommandAction::Exit;
+	else if (Command == "command list") return ECommandAction::Command_List;
 	else return ECommandAction::Invalid;
 }
 
@@ -271,6 +309,12 @@ bool FBullCowGame::HasWhiteSpace(FString Word) const
 
 	return false;
 }
+bool FBullCowGame::IsEligibleForHint() const
+{
+	int32 TimesHinted = HintLettersShown.size();
+	if (IsGameWon()) return false;
+	return (TimesHinted < MaxHint);
+}
 
 TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString File)
 {
@@ -284,7 +328,7 @@ TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString 
 
 	int32 ID = 0;
 	FString Isogram = "";
-	FString Description = "";
+	FString Definition = "";
 	FString Word = "";
 	FString Words[COLUMN] = {}; // used store the broken up words
 	char Delimiter = (char)','; // delimiter that determine where to break up the words
@@ -294,7 +338,7 @@ TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString 
 	{
 		SStream.clear(); // clear stream in order to feed in new line
 
-		TArray<FString> IsogramAndDescription;
+		TArray<FString> IsogramAndDefinition;
 
 		SStream << Line; // stream in
 
@@ -311,7 +355,7 @@ TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString 
 		{
 			ID = StringToInt32(Words[0]); // convert number as string to integer *** MAKE SURE STRING IS NUMBER ***
 			Isogram = Words[1]; // store second element of words array into variable IsogramWord
-			Description = Words[2]; // store third element of words array into variable description
+			Definition = Words[2]; // store third element of words array into variable definition
 
 			if (ID == -1) throw Words[0];
 		}
@@ -321,10 +365,10 @@ TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString 
 			exit(-2);
 		}
 
-		IsogramAndDescription.push_back(Isogram);
-		IsogramAndDescription.push_back(Description);
+		IsogramAndDefinition.push_back(Isogram);
+		IsogramAndDefinition.push_back(Definition);
 		// store word length and word into dictionary at iterator position
-		Dictionary.insert({ ID, IsogramAndDescription });
+		Dictionary.insert({ ID, IsogramAndDefinition });
 
 		// initialize MinLength, MaxLength, and AvaiableID variables
 		// this compare the values of min max length of words 
@@ -334,12 +378,12 @@ TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString 
 
 	return Dictionary;
 }
-TArray<FString> FBullCowGame::GetWordAndDescriptionFromDictionary(int32 WordLength, TMap<int32, TArray<FString>> Dictionary)
+TArray<FString> FBullCowGame::GetWordAndDefinitionFromDictionary(int32 WordLength, TMap<int32, TArray<FString>> Dictionary)
 {
 	int32 ID = 0;
 	FString Word = "";
-	FString Description = "";
-	TArray<FString> WordAndDescription = TArray<FString>();
+	FString Definition = "";
+	TArray<FString> WordAndDefinitioin = TArray<FString>();
 	bool bHasSeenAllWords = false;
 
 	// if word length is default which means equal to 0, get a random number within min and max length
@@ -355,20 +399,26 @@ TArray<FString> FBullCowGame::GetWordAndDescriptionFromDictionary(int32 WordLeng
 		Word = Dictionary[ID][0]; // get the word of random ID
 	}
 
-	Description = Dictionary[ID][1]; // set description
+	Definition = Dictionary[ID][1]; // set definition
 
 	// populate array
-	WordAndDescription.push_back(Word);
-	WordAndDescription.push_back(Description);
+	WordAndDefinitioin.push_back(Word);
+	WordAndDefinitioin.push_back(Definition);
 
 	// remove used ID and length
 	RemoveUsedIDAndLength(ID);
 
-	return WordAndDescription;
+	return WordAndDefinitioin;
 }
 int32 FBullCowGame::CalculateMaxTries(int32 WordLength)
 {
 	return WordLength * 2;
+}
+int32 FBullCowGame::CalculateMaxHint(int32 WordLength)
+{
+	if (WordLength == 3) return 1;
+	int32 MaxHint = std::ceil((float)WordLength / 2);
+	return MaxHint;
 }
 
 void FBullCowGame::InitializingSomePrivateVariables(int32 ID, int32 WordLength)

@@ -32,6 +32,7 @@ bool IsFirstCharWhiteSpace(FText);
 void ExecuteCommand(FText);
 
 void PrintWordsInDictionary();
+void PrintCommandListAndDescription();
 static int32 StringToInt32(FText);
 
 int32 GetRandomInteger(int32, int32);
@@ -41,6 +42,7 @@ void TEST_CSVFileWrite();
 //static FBullCowGame BullCowGame(3);
 FBullCowGame BullCowGame;
 GameManager Manager;
+FString AIName;
 static std::default_random_engine RandomGenerator;
 
 int main()
@@ -48,7 +50,7 @@ int main()
 
 	//PrintWordsInDictionary();
 	
-	PlayGame(true);
+	PlayGame(false);
 
 	/*for (int32 i = 0; i < 5; i++)
 	{
@@ -60,6 +62,8 @@ int main()
 
 void PlayGame(bool IsDebugMode)
 {
+	AIName = BullCowGame.GetAIName();
+
 	PrintIntroduction();
 
 	Initialize();
@@ -136,6 +140,7 @@ void PrintIntroduction()
 	std::cout << "    ***********************************************************************     \n";
 	std::cout << "    *                     -~~:+|    NEW GAME    |+:~~-                    *     \n";
 	std::cout << "    ***********************************************************************     \n";
+	std::cout << std::endl;
 	return;
 }
 void Initialize()
@@ -145,7 +150,8 @@ void Initialize()
 
 	WordLength = AskWordLength();
 	BullCowGame.Initialize(WordLength);
-
+	std::cout << std::endl;
+	PrintCommandListAndDescription();
 	std::cout << std::endl;
 
 	return;
@@ -155,16 +161,16 @@ void PrintHint()
 	constexpr int32 TAB_LENGTH = 4;
 	FText AsteriskBorder = "***********************************************************************\n";
 	FText Header = "!!! HINT !!!\n";
-	FText Dialog = "HIDDEN LETTER(S): " + BullCowGame.GetHint() + "\n";
+	FText Hint = "HIDDEN LETTER(S): " + BullCowGame.GetHint() + "\n";
 	int32 AsteriskBorderLength = TAB_LENGTH + AsteriskBorder.length();
 	int32 HeaderFillLength = TAB_LENGTH + (AsteriskBorder.length() - Header.length()) / 2 + Header.length();
-	int32 DialogFillLength = TAB_LENGTH + (AsteriskBorder.length() - Dialog.length()) / 2 + Dialog.length();
+	int32 DialogFillLength = TAB_LENGTH + (AsteriskBorder.length() - Hint.length()) / 2 + Hint.length();
 
 	std::cout << std::endl;
 	std::cout << std::setfill(' ') << std::setw(AsteriskBorderLength) << AsteriskBorder;
 	std::cout << std::setfill(' ') << std::setw(HeaderFillLength) << Header;
 	std::cout << std::setfill(' ') << std::setw(AsteriskBorderLength) << AsteriskBorder;
-	std::cout << std::setfill(' ') << std::setw(DialogFillLength) << Dialog << "\n";
+	std::cout << std::setfill(' ') << std::setw(DialogFillLength) << Hint << "\n";
 	std::cout << std::setfill(' ') << std::setw(AsteriskBorderLength) << AsteriskBorder;
 	std::cout << std::endl;
 
@@ -173,19 +179,16 @@ void PrintHint()
 void RunGameLoop(bool IsDebugMode)
 {
 	// variables
-	int32 MaxTries = 0;
-	int32 TimesHinted = 0; // used to restrict number of times able to get hint
-	FText Guess = "";
+	int32 MaxTries = 0;FText Guess = "";
 
 	bool bPlayAgain = false;
-	bool bWantHint = false;
 
-	std::cout << "You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
+	std::cout << AIName;
+	std::cout << ": You have " << BullCowGame.GetMaxTries() << " tries to guess the word!\n\n";
 
 	do
 	{
 		MaxTries = BullCowGame.GetMaxTries();
-		TimesHinted = 0;
 
 		// debug mode for development process
 		if (IsDebugMode) std::cout << "[DEBUG MODE] The hidden word is [" << BullCowGame.GetHiddenWord() << "]\n\n";
@@ -206,19 +209,6 @@ void RunGameLoop(bool IsDebugMode)
 			std::cout << "   COWS [" << BullCowCount.Cow << "]\n";
 
 			PrintGuess(Guess);
-
-			// ask if want hint when tries left equals one of the number within the MIN MAX range
-			// see the constexpr above for clarification
-			if (IsEligibleForHint(TimesHinted))
-			{
-				bWantHint = AskIfWantHint();
-
-				if (bWantHint)
-				{
-					PrintHint();
-					TimesHinted++;
-				}
-			}
 		}
 
 		// print end game message
@@ -273,7 +263,8 @@ FText GetValidGuess()
 void PrintGuess(FText Guess)
 {
 	// print user input
-	std::cout << "Your guess was: " << Guess << std::endl;
+	std::cout << AIName;
+	std::cout << ": Your guess was \"" << Guess << "\"\n\n";
 
 	return;
 }
@@ -287,31 +278,31 @@ void PrintGameSummary(bool IsGivingUp)
 	if (BullCowGame.IsGameWon())
 	{
 		Header = "!!!   WIN   !!!\n";
-		Dialog = "Well done - You WIN!\n";
+		Dialog = AIName + ": Well done - You WIN!\n";
 	}
 	else
 	{
 		Header = "!!!   LOSE   !!!\n";
 
 		if (!IsGivingUp)
-			Dialog = "You've used all your tries! Better luck next time...\n";
+			Dialog = AIName + ": You've used all your tries! Better luck next time...\n";
 		else
-			Dialog = "Given up already? You'll get it next time!\n";
+			Dialog = AIName + ": Given up already? You'll get it next time!\n";
 	}
 
 	int32 AsteriskBorderLength = TAB_LENGTH + AsteriskBorder.length();
 	int32 HeaderFillLength = TAB_LENGTH + (AsteriskBorder.length() - Header.length()) / 2 + Header.length();
-	int32 DialogFillLength = TAB_LENGTH + (AsteriskBorder.length() - Dialog.length()) / 2 + Dialog.length();
 
 	std::cout << std::endl;
 	std::cout << std::setfill(' ') << std::setw(AsteriskBorderLength) << AsteriskBorder;
 	std::cout << std::setfill(' ') << std::setw(HeaderFillLength) << Header;
 	std::cout << std::setfill(' ') << std::setw(AsteriskBorderLength) << AsteriskBorder;
-	std::cout << "        The hidden word is: " << BullCowGame.GetHiddenWord() << "\n";
-	std::cout << "        Word definition: " << BullCowGame.GetHiddenWordDescription() << "\n\n";
-	std::cout << std::setfill(' ') << std::setw(DialogFillLength) << Dialog << "\n";
+	std::cout << "        HIDDEN WORD: " << BullCowGame.GetHiddenWord() << "\n";
+	std::cout << "        DEFINITION: " << BullCowGame.GetHiddenWordDefinition() << "\n\n";
 	std::cout << std::setfill(' ') << std::setw(AsteriskBorderLength) << AsteriskBorder;
 	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << Dialog;
 	std::cout << std::endl;
 
 	//std::cout << std::endl;
@@ -319,7 +310,7 @@ void PrintGameSummary(bool IsGivingUp)
 	////std::cout << "    *                         !!! GAME SUMMARY !!!                        *\n";
 	//std::cout << "    ***********************************************************************\n";
 	//std::cout << "        The hidden word is: " << BullCowGame.GetHiddenWord() << "\n";
-	//std::cout << "        Word definition: " << BullCowGame.GetHiddenWordDescription() << "\n";
+	//std::cout << "        Word definition: " << BullCowGame.GetHiddenWordDefinition() << "\n";
 	//std::cout << std::endl;
 
 	//std::cout << "    ***********************************************************************\n";
@@ -362,7 +353,8 @@ int32 AskWordLength()
 
 	do
 	{
-		std::cout << "How many letter isogram do you want to try (from 3 to 10)? ";
+		std::cout << AIName;
+		std::cout << ": How many letter isogram do you want to try (from 3 to 10)? ";
 		std::getline(std::cin, WordLength);
 
 		WordLengthStatus = BullCowGame.CheckWordLengthValidity(WordLength);
@@ -372,16 +364,20 @@ int32 AskWordLength()
 		case EWordLengthStatus::OK:
 			break;
 		case EWordLengthStatus::Not_In_Range:
-			std::cout << "The number you just entered is not in range, please enter another number.\n\n";
+			std::cout << AIName;
+			std::cout << ": The number you just entered is not in range, please enter another number.\n\n";
 			break;
 		case EWordLengthStatus::Not_Number:
-			std::cout << "The input you just entered is not a number, please enter a number.\n\n";
+			std::cout << AIName;
+			std::cout << ": The input you just entered is not a number, please enter a number.\n\n";
 			break;
 		case EWordLengthStatus::Has_White_Space:
-			std::cout << "The input you just entered has white space, please enter a number without white space.\n\n";
+			std::cout << AIName;
+			std::cout << ": The input you just entered has white space, please enter a number without white space.\n\n";
 			break;
 		case EWordLengthStatus::No_Word_With_This_Length:
-			std::cout << "There is NO or NO MORE word with this length, please enter a different number.\n\n";
+			std::cout << AIName;
+			std::cout << ": There is NO or NO MORE word with this length, please enter a different number.\n\n";
 			break;
 		default:
 			break;
@@ -407,7 +403,8 @@ bool AskIfWantHint()
 
 	do
 	{
-		std::cout << "Too hard? Do you want to reveal a letter for this word (y/n)? ";
+		std::cout << AIName;
+		std::cout << ": Too hard? Do you want to reveal a letter for this word (y/n)? ";
 		std::getline(std::cin, Response);
 
 		AnswerStatus = CheckYesNoAnswerStatus(Response);
@@ -420,12 +417,14 @@ EYesNoAnswerStatus CheckYesNoAnswerStatus(FText Answer)
 {
 	if (IsFirstCharWhiteSpace(Answer))
 	{
-		std::cout << "Please enter Yes or No without white space infront.\n\n";
+		std::cout << AIName;
+		std::cout << ": Please enter Yes or No without white space infront.\n\n";
 		return EYesNoAnswerStatus::First_Char_White_Space;
 	}
 	else if (!IsYesOrNo(Answer))
 	{
-		std::cout << "Please enter Yes or No.\n\n";
+		std::cout << AIName;
+		std::cout << ": Please enter Yes or No.\n\n";
 		return EYesNoAnswerStatus::Not_Yes_And_Not_No;
 	}
 	else
@@ -459,31 +458,12 @@ bool IsFirstCharWhiteSpace(FText Word)
 	return false;
 }
 
-void ExecuteCommand(FText Command)
-{
-	ECommandAction CommandAction = ECommandAction::Invalid;
-
-	switch (CommandAction)
-	{
-	case ECommandAction::Invalid:
-		break;
-	case ECommandAction::Exit:
-		exit(0);
-		break;
-	case ECommandAction::Give_Up:
-		// print end game message
-		PrintGameSummary(false);
-		std::cout << std::endl;
-		break;
-	default:
-		break;
-	}
-
-}
-
 void PrintWordsInDictionary() 
 {
 	TMap<int32, TArray<FText>> Dictionary = BullCowGame.GetDictionary();
+
+	std::cout << AIName;
+	std::cout << ": Here is the Word Bank\n";
 
 	for (auto Iterator = Dictionary.begin(); Iterator != Dictionary.end(); ++Iterator)
 	{
@@ -493,6 +473,12 @@ void PrintWordsInDictionary()
 	}
 	
 	return;
+}
+void PrintCommandListAndDescription()
+{
+	std::cout << AIName;
+	std::cout << ": Here is the command list for the game in case you need it\n";
+	BullCowGame.PrintCommandListAndDescription();
 }
 int32 StringToInt32(FText String)
 {

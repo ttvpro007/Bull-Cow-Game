@@ -41,12 +41,14 @@ enum class EWordLengthStatus
 	No_Word_With_This_Length
 };
 
+// command action switch
 enum class ECommandAction
 {
 	Invalid,
-	Help,
+	Hint,
 	Exit,
-	Give_Up
+	Give_Up,
+	Command_List
 };
 
 class FBullCowGame
@@ -65,12 +67,14 @@ public:
 	int32 GetCurrentTry() const;
 	int32 GetTriesLeft() const;
 	FString GetHiddenWord() const;
-	FString GetHiddenWordDescription() const;
+	FString GetHiddenWordDefinition() const;
 	int32 GetHiddenWordLength() const;
 	FString GetHint();
 	TMap<int32, TArray<FString>> GetDictionary() const;
 	TArray<FString> Command_Expr() const;
+	FString GetAIName() const;
 	void PrintCommandList() const;
+	void PrintCommandListAndDescription() const;
 
 	bool IsCommand(FString) const;
 	bool IsGameWon() const;
@@ -90,13 +94,22 @@ public:
 
 private:
 
-	// command list
+	// Command System
+	// step for adding command expression
+	// 1. add expression in COMMAND_EXPR string array
+	// 2. add enum of the command expression in ECommandAction
+	// 3. add condition for returning command action switch in GetCommandAction function
+	// 4. add command feature/ for the expression in ExecuteCommand
+	// 5. enjoy your newly created command expression!
 	const TArray<FString> COMMAND_EXPR = 
 	{
-		"help",
+		"hint",
 		"giveup",
-		"exit"
+		"exit",
+		"command list"
 	};
+
+	const FString AIName = FString("[GAME MASTER]");
 
 	// initialized int32 type variables in contructor
 	// initialize in helper function 
@@ -110,8 +123,10 @@ private:
 	// method initialization
 	int32 CurrentTry = 0;
 	int32 MaxTries = 0;
+	int32 CurrentHint = 0;
+	int32 MaxHint = 0;
 	TMap<int32, TArray<FString>> IsogramDictionary;
-	TArray<FString> WordAndDescription;
+	TArray<FString> WordAndDefinition;
 
 	// default initialization
 	bool bIsGameWon = false;
@@ -123,10 +138,12 @@ private:
 
 	bool IsIsogram(FString) const;
 	bool HasWhiteSpace(FString) const;
+	bool IsEligibleForHint() const;
 
 	TMap<int32, TArray<FString>> GetIsogramDictionaryFromFile(FString);
-	TArray<FString> GetWordAndDescriptionFromDictionary(int32, TMap<int32, TArray<FString>>);
+	TArray<FString> GetWordAndDefinitionFromDictionary(int32, TMap<int32, TArray<FString>>);
 	int32 CalculateMaxTries(int32);
+	int32 CalculateMaxHint(int32);
 
 	void InitializingSomePrivateVariables(int32, int32);
 	void InitializeHintSystem(int32);
