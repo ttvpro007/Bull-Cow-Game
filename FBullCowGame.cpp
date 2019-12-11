@@ -69,16 +69,43 @@ FString FBullCowGame::GetHint()
 	return HintWord;
 }
 TMap<int32, TArray<FString>> FBullCowGame::GetDictionary() const { return IsogramDictionary; }
-
-bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
-bool FBullCowGame::HasShownAllLetters() const
+TArray<FString> FBullCowGame::Command_Expr() const
 {
-	return HintLettersShown.size() == Hint.size();
+	return COMMAND_EXPR;
 }
+void FBullCowGame::PrintCommandList() const
+{
+	std::cout << "\n*************\n";
+	std::cout << "COMMAND LIST:\n";
+	for (auto Command : COMMAND_EXPR)
+	{
+		std::cout << Command << "\n";
+	}
+	std::cout << "*************\n";
+	std::cout << std::endl;
+}
+
+bool FBullCowGame::IsCommand(FString Word) const
+{
+	TArray<FString> CommandList = Command_Expr();
+	for (int32 i = 0; i < CommandList.size(); i++)
+	{
+		if (Word == CommandList[i]) return true;
+	}
+
+	return false;
+}
+bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
+bool FBullCowGame::IsGivingUp() const { return bIsGivingUp; }
+bool FBullCowGame::HasShownAllLetters() const { return HintLettersShown.size() == Hint.size(); }
 
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
-	if (HasWhiteSpace(Guess)) // if guess has white space
+	if (IsCommand(Guess)) // if guess is command expression
+	{
+		return EGuessStatus::Is_Command;
+	}
+	else if (HasWhiteSpace(Guess)) // if guess has white space
 	{
 		return EGuessStatus::Has_White_Space;
 	}
@@ -119,6 +146,29 @@ EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength) cons
 	else
 	{
 		return EWordLengthStatus::OK;
+	}
+}
+
+void FBullCowGame::ExecuteCommand(FString Command)
+{
+	ECommandAction CommandAction = GetCommandAction(Command);
+	
+	switch (CommandAction)
+	{
+	case ECommandAction::Invalid:
+		std::cout << "Command Invalid\n\n";
+		break;
+	case ECommandAction::Help:
+		PrintCommandList();
+		break;
+	case ECommandAction::Exit:
+		exit(0);
+		break;
+	case ECommandAction::Give_Up:
+		bIsGivingUp = true;
+		break;
+	default:
+		break;
 	}
 }
 
@@ -165,15 +215,25 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 
 void FBullCowGame::Reset(int32 WordLength)
 {
-	CurrentTry = 1;
 	bIsGameWon = false;
+	bIsGivingUp = false;
 	WordAndDescription = GetWordAndDescriptionFromDictionary(WordLength, IsogramDictionary);
+	CurrentTry = 1;
+	MaxTries = CalculateMaxTries(WordLength);
 	InitializeHintSystem(WordLength);
 
 	return;
 }
 
 // helper functions
+ECommandAction FBullCowGame::GetCommandAction(FString Command) const
+{
+	if (Command == "help") return ECommandAction::Help;
+	else if (Command == "giveup") return ECommandAction::Give_Up;
+	else if (Command == "exit") return ECommandAction::Exit;
+	else return ECommandAction::Invalid;
+}
+
 bool FBullCowGame::IsIsogram(FString Word) const
 {
 	// 0 or 1 word length can pass
@@ -334,7 +394,7 @@ void FBullCowGame::InitializeHintSystem(int32 WordLength)
 	HintLettersShown.clear();
 
 	// initialized all letters in hint to "_"
-	for (size_t i = 0; i < WordLength; i++)
+	for (int32 i = 0; i < WordLength; i++)
 	{
 		Hint.push_back('_');
 	}

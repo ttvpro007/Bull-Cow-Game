@@ -27,7 +27,8 @@ enum class EGuessStatus
 	OK,
 	Not_Isogram,
 	Wrong_Length,
-	Has_White_Space
+	Has_White_Space,
+	Is_Command
 };
 
 enum class EWordLengthStatus
@@ -38,6 +39,14 @@ enum class EWordLengthStatus
 	Not_In_Range,
 	Has_White_Space,
 	No_Word_With_This_Length
+};
+
+enum class ECommandAction
+{
+	Invalid,
+	Help,
+	Exit,
+	Give_Up
 };
 
 class FBullCowGame
@@ -60,13 +69,19 @@ public:
 	int32 GetHiddenWordLength() const;
 	FString GetHint();
 	TMap<int32, TArray<FString>> GetDictionary() const;
+	TArray<FString> Command_Expr() const;
+	void PrintCommandList() const;
 
+	bool IsCommand(FString) const;
 	bool IsGameWon() const;
+	bool IsGivingUp() const;
 	bool HasShownAllLetters() const;
 
 	// status checkers
 	EGuessStatus CheckGuessValidity(FString) const;
 	EWordLengthStatus CheckWordLengthValidity(FString) const;
+
+	void ExecuteCommand(FString);
 	
 	// counts bulls and cows and increases turn #
 	FBullCowCount SubmitValidGuess(FString); // TODO move current try and its incement to game manager
@@ -74,6 +89,15 @@ public:
 	void Reset(int32); // TODO make a more rich return value.
 
 private:
+
+	// command list
+	const TArray<FString> COMMAND_EXPR = 
+	{
+		"help",
+		"giveup",
+		"exit"
+	};
+
 	// initialized int32 type variables in contructor
 	// initialize in helper function 
 	// InitializingSomePrivateVariables(int32, int32)
@@ -91,8 +115,12 @@ private:
 
 	// default initialization
 	bool bIsGameWon = false;
+	bool bIsGivingUp = false;
 
 	// helper functions
+	// command action checker
+	ECommandAction GetCommandAction(FString) const;
+
 	bool IsIsogram(FString) const;
 	bool HasWhiteSpace(FString) const;
 
