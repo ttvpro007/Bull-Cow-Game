@@ -33,6 +33,16 @@ void FBullCowGame::Initialize(int32 WordLength)
 	return;
 }
 
+int32 FBullCowGame::GetMinLength() const
+{
+	return MinLength;
+}
+
+int32 FBullCowGame::GetMaxLength() const
+{
+	return MaxLength;
+}
+
 int32 FBullCowGame::GetMaxTries() const { return MaxTries; }
 int32 FBullCowGame::GetCurrentTry() const { return CurrentTry; }
 int32 FBullCowGame::GetTriesLeft() const

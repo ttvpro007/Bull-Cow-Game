@@ -63,6 +63,8 @@ public:
 	// initializer that takes word length
 	void Initialize(int32);
 
+	int32 GetMinLength() const;
+	int32 GetMaxLength() const;
 	int32 GetMaxTries() const;
 	int32 GetCurrentTry() const;
 	int32 GetTriesLeft() const;

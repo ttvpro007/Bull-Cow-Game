@@ -354,7 +354,7 @@ int32 AskWordLength()
 	do
 	{
 		std::cout << AIName;
-		std::cout << ": How many letter isogram do you want to try (from 3 to 10)? ";
+		std::cout << ": How many letter isogram do you want to try (from " << BullCowGame.GetMinLength() << " to " << BullCowGame.GetMaxLength() << ")? ";
 		std::getline(std::cin, WordLength);
 
 		WordLengthStatus = BullCowGame.CheckWordLengthValidity(WordLength);
