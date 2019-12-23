@@ -10,6 +10,13 @@
 #define FString std::string
 #define int32 int
 
+enum class EGameMode
+{
+	Invalid_Mode,
+	Mode_Word,
+	Mode_Number
+};
+
 enum class EYesNoAnswerStatus
 {
 	Invalid_Status,
@@ -26,34 +33,46 @@ public:
 	~GameManager();
 
 	// Play the game!!! TRUE for Debug mode, FALSE for Normal mode
-	void PlayGame(bool);
+	void PowerON(bool);
 
 	// Print all the words in the word bank
 	void PrintWordsInDictionary();
 
 private:
 	// variables
+	EGameMode GameMode = EGameMode::Invalid_Mode;
 	FBullCowGame BullCowGame;
-	FString AIName;
+	FString AIName = FString("[GAME MANAGER]");;
 	static std::default_random_engine RandomGenerator;
 
 	// helper functions
 
-	// ************** PlayGame **************
+	// ************** PowerON **************
 	// Print introduction for the game
-	void PrintIntroduction();
+	void PrintIntroduction(EGameMode);
 
 	// Game mode
-	int AskGameMode();
+	void SetupGameMode();
 
 	// Setting up the game
 	void Initialize();
 
 	// Run the game
-	void RunGameLoop(bool);
-	// ************** PlayGame **************
+	void RunGameLoop(EGameMode, bool); //TODO do something with GameMode
+	// ************** PowerON **************
+
+	// ************** Initialize **************
+	// Setup Word game
+	void StartWordGame();
+
+	// Setup Number game
+	void InitNumGame();
+	// ************** Initialize **************
 
 	// ************** Gameplay functions **************
+	// Play Word game
+	void PlayBullCowGame(bool);
+
 	// Ask the desired word length from user
 	int32 AskWordLength();
 	
@@ -75,6 +94,9 @@ private:
 	// Ask if want to play again
 	bool AskToPlayAgain();
 	
+	// Game mode checker
+	EGameMode GetValidGameMode(int32) const;
+
 	// State of yes no input
 	EYesNoAnswerStatus CheckYesNoAnswerStatus(FString);
 	

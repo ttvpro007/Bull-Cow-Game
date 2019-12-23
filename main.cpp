@@ -13,7 +13,7 @@ int main()
 {
 	//PrintWordsInDictionary();
 	
-	Manager.PlayGame(false);
+	Manager.PowerON(false);
 
 	/*for (int32 i = 0; i < 5; i++)
 	{

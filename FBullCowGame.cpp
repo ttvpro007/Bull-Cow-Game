@@ -2,7 +2,7 @@
 
 FBullCowGame::FBullCowGame()
 	: CurrentTry(0), MaxTries(0), MinLength(0), MaxLength(0), MaxHint(0),
-	AIName("[GAME MASTER]"),
+	AIName("[WORD GAME MASTER]"),
 	IsogramDictionary(GetIsogramDictionaryFromFile("Isogram Word Bank.csv"))
 {
 }
@@ -30,6 +30,80 @@ void FBullCowGame::Initialize(int32 WordLength)
 	MaxHint = CalculateMaxHint((int32)WordAndDefinition[0].length());
 	InitializeHintSystem(WordLength);
 
+	return;
+}
+
+void FBullCowGame::Introduction() const
+{
+	// introduction
+	std::cout << "               .                                                                \n";
+	std::cout << "                		                                                          \n";
+	std::cout << "               |		                                                          \n";
+	std::cout << "      .               /                                                         \n";
+	std::cout << "       \\       I     	                                                      \n";
+	std::cout << "                   /                                                            \n";
+	std::cout << "         \\  ,g88R_                                                             \n";
+	std::cout << "           d888(`  ).                             _                         __  \n";
+	std::cout << "  -  --==  888(     ).=--              _      .+(`  )`.              .--._.'  ' \n";
+	std::cout << " )         Y8P(       '`.          _+(   ) --:(   .    )          .=(         ) \n";
+	std::cout << "         .+(`(      .   )     .-- '      _   `.  (    ) )         (   .  )   )  \n";
+	std::cout << "        ((    (..__.:'-'   .=(   )     (   )   ` _`  ) )         (   (   ))     \n";
+	std::cout << " `.     `(       ) )       (   .  )    ''    )    (   )    ._      `- __.'      \n";
+	std::cout << "   )      ` __.:'   )     (   (   )) (  (     ) _: `-'  .:(`  )           (     \n";
+	std::cout << " )  )  ( )       --'       `- __.'     -+_ _:'         :(      ))          '-__ \n";
+	std::cout << " .-'  (_.'          .')                                `(    )  ))              \n";
+	std::cout << "                   (_  )                                 ` __.:'                \n";
+	std::cout << "                                      	                                      \n";
+	std::cout << " -..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.---.-'`,---..-_.--,-,,..._.--.. \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                _____________________________________________                   \n";
+	std::cout << "               /                                             \\	              \n";
+	std::cout << "              /           Welcome to Bulls and Cows           \\                \n";
+	std::cout << "              \\               A fun word game!                /                \n";
+	std::cout << "               \\_____________________________________________/	              \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                                                                                \n";
+	std::cout << " -.-.,,._,-.--._.--,--'`,,'`,---..-_,,..._.--..-..-..-.--+-....__---._.-,--.--- \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                         ,@@@@@@@,              _.-^-._         +&-             \n";
+	std::cout << "                 ,,,.   ,@@@@@@/@@,         .-'---------'-.    .--.             \n";
+	std::cout << "               ,&%%&%&&%,@@@@@/@@@@@     .-'-------_-------'-. |__|             \n";
+	std::cout << "              ,%&\\%&&%&&%,@@@\\@@@/@@    /---------|_|---------\\|  |          \n";
+	std::cout << "              %&&%&%&/%&&%@@\\@@/ /@@   / _____           _____ \\  |           \n";
+	std::cout << "              %&&%/ %&%%&&@@\\ V /@@'  /| |_|_|  _______  |_|_| |\\ |           \n";
+	std::cout << "              `&%\\|o|/%&'    |.|       | |_|_|  |==|==|  |_|_| |  |            \n";
+	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |--|--|        |  |--|---|---|- \n";
+	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |==|==|        |  |--|---|---|- \n";
+	std::cout << " '-'''-'-''-''-''''-''-'''-''''-''-'''-'''''-''-'''-'-''-'''''-''-'''-''-''-''' \n";
+	std::cout << " ' 'VV'   '  ''' ' '  '  ''       ' '   '''   'VV ''   '''' ' ''    '  ' ''V    \n";
+	std::cout << "  ''' ' VV'   'vv '  vv'   }___{  '''VV'  ''''  '  ___ '''  '  VVV' ' V''  '' ' \n";
+	std::cout << " ''' ' '  ' ''      ''     (o o)  ' '' vv'' '     (o o)      '   ''  v  '   VVV \n";
+	std::cout << "  '''V    'V   '''  /-------\\ /  '''     ''  '     \\ /-------\\   '''  '   '' \n";
+	std::cout << "  ''  ' '' '' '    / | BULL |O     ''  '    'vvv    O| COW  | \\   '''vv ' 'V   \n";
+	std::cout << "    'vv  '''      *  |-,--- |   ''vvv'   '   ''   '  |------|  *    '  ''   ''  \n";
+	std::cout << "  ''    'v'' ' ''    ^   '  ^ '  '''   '    ''''     ^ '''  ^ ' '' ''  '''  ' v \n";
+	std::cout << "    ''    vV '''  VV  ''    V  ' '' 'VV '''   ' Vv''   '''' ' ''V   'V  v'    ' \n";
+	std::cout << " '  ''    '     '''   '' '    ''  vv      '  '     ''   ''     '    ' '   '''   \n";
+	std::cout << " ''-'-''-''-''-''''-''-'''-''''-''-'''-''''''-'-'''-''-'''-'-''-'''''-''-'-'''- \n";
+	std::cout << std::endl;
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "    *  INSTRUCTION: In this game, you'll guess an ISOGRAM with the        *     \n";
+	std::cout << "    *  length of your choice in 5 turns. After each guess, you'll see the *     \n";
+	std::cout << "    *  the number of BULLS and COWS.                                      *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    *  BULLS is the number of letter you guessed right in the right place *     \n";
+	std::cout << "    *  COWS is the number of letter you guessed right in the wrong place  *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    *                    *** What is an ISOGRAM? ***                      *     \n";
+	std::cout << "    *      *** An ISOGRAM is a word WITHOUT a repeating letter ***        *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << std::endl;
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "    *                     -~~:+|    NEW GAME    |+:~~-                    *     \n";
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << std::endl;
 	return;
 }
 
@@ -130,23 +204,6 @@ bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
 bool FBullCowGame::IsGivingUp() const { return bIsGivingUp; }
 bool FBullCowGame::HasShownAllLetters() const { return HintLettersShown.size() == Hint.size(); }
 
-EGameMode FBullCowGame::CheckGameModeValidity(FString GameMode) const
-{
-	int32 IGameMode = StringToInt32(GameMode);
-
-	if (IGameMode == 1)
-	{
-		return EGameMode::Mode_Word;
-	}
-	else if (IGameMode == 2)
-	{
-		return EGameMode::Mode_Number;
-	}
-	else
-	{
-		return EGameMode::Invalid_Mode;
-	}
-}
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
 	if (IsCommand(Guess)) // if guess is command expression
