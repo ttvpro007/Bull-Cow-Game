@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <iomanip>
+#include <cmath>
 #include "FBullCowGame.h"
 
 
@@ -19,30 +21,78 @@ enum class EYesNoAnswerStatus
 static class GameManager
 {
 public:
+	// instructor
+	GameManager();
+	~GameManager();
 
-	void PlayGame();
+	// Play the game!!! TRUE for Debug mode, FALSE for Normal mode
+	void PlayGame(bool);
+
+	// Print all the words in the word bank
 	void PrintWordsInDictionary();
 
 private:
 	// variables
-	FBullCowGame BullCowGame = FBullCowGame();
+	FBullCowGame BullCowGame;
+	FString AIName;
 	static std::default_random_engine RandomGenerator;
 
 	// helper functions
-	void PrintIntroduction();
-	void Initialize();
-	void PrintHint();
-	void RunGameLoop();
-	FString GetValidGuess();
-	void PrintGuess(FString);
-	void PrintGameSummary();
-	bool AskToPlayAgain();
-	int32 AskWordLength();
-	bool AskIfWantHint();
-	EYesNoAnswerStatus CheckYesNoAnswerStatus(FString);
 
+	// ************** PlayGame **************
+	// Print introduction for the game
+	void PrintIntroduction();
+
+	// Setting up the game
+	void Initialize();
+
+	// Run the game
+	void RunGameLoop(bool);
+	// ************** PlayGame **************
+
+	// ************** Gameplay functions **************
+	// Ask the desired word length from user
+	int32 AskWordLength();
+	
+	// Get guess and loop until valid guess is received
+	FString GetValidGuess();
+	
+	// Print hint from game black box
+	void PrintHint();
+	
+	// Show last entered guess
+	void PrintGuess(FString);
+	
+	// Ask if want hint
+	bool AskIfWantHint();
+	
+	// Print game summary
+	void PrintGameSummary(bool);
+	
+	// Ask if want to play again
+	bool AskToPlayAgain();
+	
+	// State of yes no input
+	EYesNoAnswerStatus CheckYesNoAnswerStatus(FString);
+	
+	// Is Yes or No checker
+	bool IsYesOrNo(FString);
+	
+	// Is first character white space
+	bool IsFirstCharWhiteSpace(FString);
+	
+	// Command helper
+	void PrintCommandListAndDescription();
+	// ************** Gameplay functions **************
+
+	// ************** Utility functions **************
+	// Get a random integer within min and max
 	int32 GetRandomInteger(int32, int32);
+
+	// Convert string to int, if unsuccessful, return -1
 	int32 StringToInt32(FString);
 
+	// Testing function to write csv file
 	void TEST_CSVFileWrite();
+	// ************** Utility functions **************
 };

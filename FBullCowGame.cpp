@@ -14,9 +14,9 @@ void FBullCowGame::Initialize()
 {
 	WordAndDefinition = GetWordAndDefinitionFromDictionary(0, IsogramDictionary);
 	CurrentTry = 1;
-	MaxTries = CalculateMaxTries(WordAndDefinition[0].length());
+	MaxTries = CalculateMaxTries((int32)WordAndDefinition[0].length());
 	CurrentHint = 1;
-	MaxHint = CalculateMaxHint(WordAndDefinition[0].length());
+	MaxHint = CalculateMaxHint((int32)WordAndDefinition[0].length());
 	InitializeHintSystem((int32)WordAndDefinition[0].size());
 
 	return;
@@ -27,7 +27,7 @@ void FBullCowGame::Initialize(int32 WordLength)
 	CurrentTry = 1;
 	this->MaxTries = CalculateMaxTries((int32)WordAndDefinition[0].length());
 	CurrentHint = 1;
-	MaxHint = CalculateMaxHint(WordAndDefinition[0].length());
+	MaxHint = CalculateMaxHint((int32)WordAndDefinition[0].length());
 	InitializeHintSystem(WordLength);
 
 	return;
@@ -65,7 +65,7 @@ FString FBullCowGame::GetHint()
 		do
 		{
 			// randomized index
-			Index = GetRandomInteger(0, Hint.size() - 1);
+			Index = GetRandomInteger(0, (int32)Hint.size() - 1);
 			// get letter from word at randomized index
 			Letter = WordAndDefinition[0][Index];
 
@@ -321,7 +321,7 @@ bool FBullCowGame::HasWhiteSpace(FString Word) const
 }
 bool FBullCowGame::IsEligibleForHint() const
 {
-	int32 TimesHinted = HintLettersShown.size();
+	int32 TimesHinted = (int32)HintLettersShown.size();
 	if (IsGameWon()) return false;
 	return (TimesHinted < MaxHint);
 }
@@ -427,7 +427,7 @@ int32 FBullCowGame::CalculateMaxTries(int32 WordLength)
 int32 FBullCowGame::CalculateMaxHint(int32 WordLength)
 {
 	if (WordLength == 3) return 1;
-	int32 MaxHint = std::ceil((float)WordLength / 2);
+	int32 MaxHint = (int32)std::ceil((float)WordLength / 2);
 	return MaxHint;
 }
 
