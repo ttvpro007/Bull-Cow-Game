@@ -43,6 +43,9 @@ private:
 	// Print introduction for the game
 	void PrintIntroduction();
 
+	// Game mode
+	int AskGameMode();
+
 	// Setting up the game
 	void Initialize();
 

@@ -41,6 +41,13 @@ enum class EWordLengthStatus
 	No_Word_With_This_Length
 };
 
+enum class EGameMode
+{
+	Invalid_Mode,
+	Mode_Word,
+	Mode_Number
+};
+
 // command action switch
 enum class ECommandAction
 {
@@ -84,6 +91,7 @@ public:
 	bool HasShownAllLetters() const;
 
 	// status checkers
+	EGameMode CheckGameModeValidity(FString) const;
 	EGuessStatus CheckGuessValidity(FString) const;
 	EWordLengthStatus CheckWordLengthValidity(FString) const;
 

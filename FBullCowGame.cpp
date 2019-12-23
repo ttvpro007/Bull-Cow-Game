@@ -130,6 +130,23 @@ bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
 bool FBullCowGame::IsGivingUp() const { return bIsGivingUp; }
 bool FBullCowGame::HasShownAllLetters() const { return HintLettersShown.size() == Hint.size(); }
 
+EGameMode FBullCowGame::CheckGameModeValidity(FString GameMode) const
+{
+	int32 IGameMode = StringToInt32(GameMode);
+
+	if (IGameMode == 1)
+	{
+		return EGameMode::Mode_Word;
+	}
+	else if (IGameMode == 2)
+	{
+		return EGameMode::Mode_Number;
+	}
+	else
+	{
+		return EGameMode::Invalid_Mode;
+	}
+}
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
 	if (IsCommand(Guess)) // if guess is command expression

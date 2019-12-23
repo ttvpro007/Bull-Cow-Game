@@ -112,6 +112,51 @@ void GameManager::PrintIntroduction()
 	return;
 }
 
+int GameManager::AskGameMode()
+{
+	// variables
+	FString Mode = "";
+	int32 IMode = 0;
+
+	EGameMode GameMode = EGameMode::Invalid_Mode;
+
+	do
+	{
+		std::cout << AIName;
+		std::cout << ": I have 2 game mode for you.\n";
+		std::cout << AIName;
+		std::cout << ": 1 for Word game\n";
+		std::cout << AIName;
+		std::cout << ": 2 for Number game\n";
+		std::cout << AIName;
+		std::cout << ": Which mode would you like to play?\n";
+
+		std::getline(std::cin, Mode);
+
+		GameMode = BullCowGame.CheckGameModeValidity(Mode);
+
+		switch (GameMode)
+		{
+		case EGameMode::Mode_Word:
+			std::cout << AIName;
+			std::cout << ": You chose to play word game.\n\n";
+			break;
+		case EGameMode::Mode_Number:
+			std::cout << AIName;
+			std::cout << ": You chose to play number game.\n\n";
+			break;
+		default:
+			std::cout << ": Please choose mode 1 or mode 2.\n\n";
+			break;
+		}
+
+	} while (GameMode != EGameMode::Mode_Word || GameMode != EGameMode::Mode_Number);
+
+	IMode = StringToInt32(Mode);
+
+	return IMode;
+}
+
 void GameManager::Initialize()
 {
 	// variables
