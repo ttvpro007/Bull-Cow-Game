@@ -154,14 +154,12 @@
     <ClCompile Include="CVSFileManager.cpp" />
     <ClCompile Include="FBullCowGame.cpp" />
     <ClCompile Include="BullCowGameManager.cpp" />
-    <ClCompile Include="FLockPickerGame.cpp" />
     <ClCompile Include="GameStation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CVSFileManager.h" />
     <ClInclude Include="FBullCowGame.h" />
     <ClInclude Include="BullCowGameManager.h" />
-    <ClInclude Include="FLockPickerGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
