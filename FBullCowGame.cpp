@@ -1,8 +1,9 @@
 #include "FBullCowGame.h"
 
 FBullCowGame::FBullCowGame()
-	: CurrentTry(0), MaxTries(0), MinLength(0), MaxLength(0), MaxHint(0),
-	AIName("[WORD GAME MASTER]"),
+	: CurrentTry(0), MaxTries(0), MinWordLength(0), MaxWordLength(0),
+	MinCombinationLength(3), MaxCombinationLength(9),
+	MaxHint(0), GameMode(EGameMode::Invalid_Mode),
 	IsogramDictionary(GetIsogramDictionaryFromFile("Isogram Word Bank.csv"))
 {
 }
@@ -10,18 +11,28 @@ FBullCowGame::~FBullCowGame()
 {
 }
 
-void FBullCowGame::Initialize()
+void FBullCowGame::Initialize(EGameMode GameMode, int32 WordLength)
 {
-	WordAndDefinition = GetWordAndDefinitionFromDictionary(0, IsogramDictionary);
-	CurrentTry = 1;
-	MaxTries = CalculateMaxTries((int32)WordAndDefinition[0].length());
-	CurrentHint = 1;
-	MaxHint = CalculateMaxHint((int32)WordAndDefinition[0].length());
-	InitializeHintSystem((int32)WordAndDefinition[0].size());
+	bIsGoingToMenu = false;
+	this->GameMode = GameMode;
+
+	switch (GameMode)
+	{
+	case EGameMode::Invalid_Mode:
+		break;
+	case EGameMode::Mode_Word:
+		InitWordGame(WordLength);
+		break;
+	case EGameMode::Mode_Combination:
+		InitCombinationGame(WordLength);
+		break;
+	default:
+		break;
+	}
 
 	return;
 }
-void FBullCowGame::Initialize(int32 WordLength)
+void FBullCowGame::InitWordGame(int32 WordLength)
 {
 	WordAndDefinition = GetWordAndDefinitionFromDictionary(WordLength, IsogramDictionary);
 	CurrentTry = 1;
@@ -29,11 +40,18 @@ void FBullCowGame::Initialize(int32 WordLength)
 	CurrentHint = 1;
 	MaxHint = CalculateMaxHint((int32)WordAndDefinition[0].length());
 	InitializeHintSystem(WordLength);
-
-	return;
+}
+void FBullCowGame::InitCombinationGame(int32 CombinationLength)
+{
+	LockCombination = GenerateRandomUniqueNumber(CombinationLength);
+	CurrentTry = 1;
+	this->MaxTries = CalculateMaxTries((int32)LockCombination.length());
+	CurrentHint = 1;
+	MaxHint = CalculateMaxHint((int32)LockCombination.length());
+	InitializeHintSystem(CombinationLength);
 }
 
-void FBullCowGame::Introduction() const
+void FBullCowGame::WordGameIntro() const
 {
 	// introduction
 	std::cout << "               .                                                                \n";
@@ -59,7 +77,7 @@ void FBullCowGame::Introduction() const
 	std::cout << "                _____________________________________________                   \n";
 	std::cout << "               /                                             \\	              \n";
 	std::cout << "              /           Welcome to Bulls and Cows           \\                \n";
-	std::cout << "              \\               A fun word game!                /                \n";
+	std::cout << "              \\               Word Game Mode!                 /                \n";
 	std::cout << "               \\_____________________________________________/	              \n";
 	std::cout << "                                                                                \n";
 	std::cout << "                                                                                \n";
@@ -88,15 +106,85 @@ void FBullCowGame::Introduction() const
 	std::cout << " ''-'-''-''-''-''''-''-'''-''''-''-'''-''''''-'-'''-''-'''-'-''-'''''-''-'-'''- \n";
 	std::cout << std::endl;
 	std::cout << "    ***********************************************************************     \n";
-	std::cout << "    *  INSTRUCTION: In this game, you'll guess an ISOGRAM with the        *     \n";
-	std::cout << "    *  length of your choice in 5 turns. After each guess, you'll see the *     \n";
+	std::cout << "    *                    *** What is an ISOGRAM? ***                      *     \n";
+	std::cout << "    *      *** An ISOGRAM is a word WITHOUT a repeating letter ***        *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    *  INSTRUCTION: In this game, you'll guess an ISOGRAM with the length *     \n";
+	std::cout << "    *  of your choice in a limited turns. After each guess, you'll see    *     \n";
 	std::cout << "    *  the number of BULLS and COWS.                                      *     \n";
 	std::cout << "    *                                                                     *     \n";
 	std::cout << "    *  BULLS is the number of letter you guessed right in the right place *     \n";
 	std::cout << "    *  COWS is the number of letter you guessed right in the wrong place  *     \n";
 	std::cout << "    *                                                                     *     \n";
-	std::cout << "    *                    *** What is an ISOGRAM? ***                      *     \n";
-	std::cout << "    *      *** An ISOGRAM is a word WITHOUT a repeating letter ***        *     \n";
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << std::endl;
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "    *                     -~~:+|    NEW GAME    |+:~~-                    *     \n";
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << std::endl;
+	return;
+}
+void FBullCowGame::CombinationGameIntro() const
+{
+	// introduction
+	std::cout << "               .                                                                \n";
+	std::cout << "                		                                                          \n";
+	std::cout << "               |		                                                          \n";
+	std::cout << "      .               /                                                         \n";
+	std::cout << "       \\       I     	                                                      \n";
+	std::cout << "                   /                                                            \n";
+	std::cout << "         \\  ,g88R_                                                             \n";
+	std::cout << "           d888(`  ).                             _                         __  \n";
+	std::cout << "  -  --==  888(     ).=--              _      .+(`  )`.              .--._.'  ' \n";
+	std::cout << " )         Y8P(       '`.          _+(   ) --:(   .    )          .=(         ) \n";
+	std::cout << "         .+(`(      .   )     .-- '      _   `.  (    ) )         (   .  )   )  \n";
+	std::cout << "        ((    (..__.:'-'   .=(   )     (   )   ` _`  ) )         (   (   ))     \n";
+	std::cout << " `.     `(       ) )       (   .  )    ''    )    (   )    ._      `- __.'      \n";
+	std::cout << "   )      ` __.:'   )     (   (   )) (  (     ) _: `-'  .:(`  )           (     \n";
+	std::cout << " )  )  ( )       --'       `- __.'     -+_ _:'         :(      ))          '-__ \n";
+	std::cout << " .-'  (_.'          .')                                `(    )  ))              \n";
+	std::cout << "                   (_  )                                 ` __.:'                \n";
+	std::cout << "                                      	                                      \n";
+	std::cout << " -..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.---.-'`,---..-_.--,-,,..._.--.. \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                _____________________________________________                   \n";
+	std::cout << "               /                                             \\	              \n";
+	std::cout << "              /           Welcome to Bulls and Cows           \\                \n";
+	std::cout << "              \\         Lock Combination Game Mode!           /                \n";
+	std::cout << "               \\_____________________________________________/	              \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                                                                                \n";
+	std::cout << " -.-.,,._,-.--._.--,--'`,,'`,---..-_,,..._.--..-..-..-.--+-....__---._.-,--.--- \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                                                                                \n";
+	std::cout << "                         ,@@@@@@@,              _.-^-._         +&-             \n";
+	std::cout << "                 ,,,.   ,@@@@@@/@@,         .-'---------'-.    .--.             \n";
+	std::cout << "               ,&%%&%&&%,@@@@@/@@@@@     .-'-------_-------'-. |__|             \n";
+	std::cout << "              ,%&\\%&&%&&%,@@@\\@@@/@@    /---------|_|---------\\|  |          \n";
+	std::cout << "              %&&%&%&/%&&%@@\\@@/ /@@   / _____           _____ \\  |           \n";
+	std::cout << "              %&&%/ %&%%&&@@\\ V /@@'  /| |_|_|  _______  |_|_| |\\ |           \n";
+	std::cout << "              `&%\\|o|/%&'    |.|       | |_|_|  |==|==|  |_|_| |  |            \n";
+	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |--|--|        |  |--|---|---|- \n";
+	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |==|==|        |  |--|---|---|- \n";
+	std::cout << " '-'''-'-''-''-''''-''-'''-''''-''-'''-'''''-''-'''-'-''-'''''-''-'''-''-''-''' \n";
+	std::cout << " ' 'VV'   '  ''' ' '  '  ''       ' '   '''   'VV ''   '''' ' ''    '  ' ''V    \n";
+	std::cout << "  ''' ' VV'   'vv '  vv'   }___{  '''VV'  ''''  '  ___ '''  '  VVV' ' V''  '' ' \n";
+	std::cout << " ''' ' '  ' ''      ''     (o o)  ' '' vv'' '     (o o)      '   ''  v  '   VVV \n";
+	std::cout << "  '''V    'V   '''  /-------\\ /  '''     ''  '     \\ /-------\\   '''  '   '' \n";
+	std::cout << "  ''  ' '' '' '    / | BULL |O     ''  '    'vvv    O| COW  | \\   '''vv ' 'V   \n";
+	std::cout << "    'vv  '''      *  |-,--- |   ''vvv'   '   ''   '  |------|  *    '  ''   ''  \n";
+	std::cout << "  ''    'v'' ' ''    ^   '  ^ '  '''   '    ''''     ^ '''  ^ ' '' ''  '''  ' v \n";
+	std::cout << "    ''    vV '''  VV  ''    V  ' '' 'VV '''   ' Vv''   '''' ' ''V   'V  v'    ' \n";
+	std::cout << " '  ''    '     '''   '' '    ''  vv      '  '     ''   ''     '    ' '   '''   \n";
+	std::cout << " ''-'-''-''-''-''''-''-'''-''''-''-'''-''''''-'-'''-''-'''-'-''-'''''-''-'-'''- \n";
+	std::cout << std::endl;
+	std::cout << "    ***********************************************************************     \n";
+	std::cout << "    *  INSTRUCTION: In this game, you'll guess a combination with the     *     \n";
+	std::cout << "    *  length of your choice in a limited turns. After each guess, you'll *     \n";
+	std::cout << "    *  see the number of BULLS and COWS.                                  *     \n";
+	std::cout << "    *                                                                     *     \n";
+	std::cout << "    *  BULLS is the number you guessed right in the right place           *     \n";
+	std::cout << "    *  COWS is the number you guessed right in the wrong place            *     \n";
 	std::cout << "    *                                                                     *     \n";
 	std::cout << "    ***********************************************************************     \n";
 	std::cout << std::endl;
@@ -107,29 +195,22 @@ void FBullCowGame::Introduction() const
 	return;
 }
 
-int32 FBullCowGame::GetMinLength() const
-{
-	return MinLength;
-}
-
-int32 FBullCowGame::GetMaxLength() const
-{
-	return MaxLength;
-}
-
+int32 FBullCowGame::GetMinWordLength() const { return MinWordLength; }
+int32 FBullCowGame::GetMaxWordLength() const { return MaxWordLength; }
+int32 FBullCowGame::GetMinCombinationLength() const { return MinCombinationLength; }
+int32 FBullCowGame::GetMaxCombinationLength() const { return MaxCombinationLength; }
 int32 FBullCowGame::GetMaxTries() const { return MaxTries; }
 int32 FBullCowGame::GetCurrentTry() const { return CurrentTry; }
-int32 FBullCowGame::GetTriesLeft() const
-{
-	return MaxTries - CurrentTry + 1;
-}
+int32 FBullCowGame::GetTriesLeft() const { return MaxTries - CurrentTry + 1; }
 FString FBullCowGame::GetHiddenWord() const { return WordAndDefinition[0]; }
 FString FBullCowGame::GetHiddenWordDefinition() const { return WordAndDefinition[1]; }
 int32 FBullCowGame::GetHiddenWordLength() const { return (int32)WordAndDefinition[0].length(); }
+FString FBullCowGame::GetLockCombination() const { return LockCombination; }
+int32 FBullCowGame::GetLockCombinationLength() const { return (int32)LockCombination.length(); }
 FString FBullCowGame::GetHint()
 {
 	FString HintWord = "";
-	char Letter = ' ';
+	char Character = ' ';
 	int32 Index = 0;
 
 
@@ -141,15 +222,27 @@ FString FBullCowGame::GetHint()
 			// randomized index
 			Index = GetRandomInteger(0, (int32)Hint.size() - 1);
 			// get letter from word at randomized index
-			Letter = WordAndDefinition[0][Index];
+			switch (GameMode)
+			{
+			case EGameMode::Invalid_Mode:
+				break;
+			case EGameMode::Mode_Word:
+				Character = WordAndDefinition[0][Index];
+				break;
+			case EGameMode::Mode_Combination:
+				Character = LockCombination[Index];
+				break;
+			default:
+				break;
+			}
 
-		} while (IsHintLetterShown(Letter));
+		} while (IsHintLetterShown(Character));
 
 		// populate hint letter shown
-		HintLettersShown.push_back(Letter);
+		HintShown.push_back(Character);
 
 		// replace "_" with a random letter taken from hidden word
-		Hint[Index] = Letter;
+		Hint[Index] = Character;
 	}
 
 	// populate the hint word
@@ -180,10 +273,13 @@ void FBullCowGame::PrintCommandList() const
 
 void FBullCowGame::PrintCommandListAndDescription() const
 {
+	std::cout << AIName;
+	std::cout << ": Here is the command list for the game in case you need it\n";
 	std::cout << "\n*******************************************\n";
 	std::cout << "COMMAND LIST:\n";
 	std::cout << "hint - revealing a letter in the hidden word\n";
 	std::cout << "giveup - give up the round\n";
+	std::cout << "menu - go to menu\n";
 	std::cout << "exit - quit the program\n";
 	std::cout << "command list - print available command list\n";
 	std::cout << "*******************************************\n";
@@ -202,29 +298,30 @@ bool FBullCowGame::IsCommand(FString Word) const
 }
 bool FBullCowGame::IsGameWon() const { return bIsGameWon; }
 bool FBullCowGame::IsGivingUp() const { return bIsGivingUp; }
-bool FBullCowGame::HasShownAllLetters() const { return HintLettersShown.size() == Hint.size(); }
+bool FBullCowGame::IsGoingToMenu() const { return bIsGoingToMenu; }
+bool FBullCowGame::HasShownAllLetters() const { return HintShown.size() == Hint.size(); }
 
-EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
+EWordGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
 	if (IsCommand(Guess)) // if guess is command expression
 	{
-		return EGuessStatus::Is_Command;
+		return EWordGuessStatus::Is_Command;
 	}
 	else if (HasWhiteSpace(Guess)) // if guess has white space
 	{
-		return EGuessStatus::Has_White_Space;
+		return EWordGuessStatus::Has_White_Space;
 	}
 	else if (!IsIsogram(Guess)) // if guess isn't isogram
 	{
-		return EGuessStatus::Not_Isogram;
+		return EWordGuessStatus::Is_Not_Isogram;
 	}
 	else if (Guess.length() != GetHiddenWordLength()) // if guess doesn't have right length
 	{
-		return EGuessStatus::Wrong_Length;
+		return EWordGuessStatus::Wrong_Length;
 	}
 	else // otherwise return Ok
 	{
-		return EGuessStatus::OK;
+		return EWordGuessStatus::OK;
 	}
 }
 EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength) const
@@ -240,7 +337,7 @@ EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength) cons
 	{
 		return EWordLengthStatus::Not_Number;
 	}
-	else if (IWordLength > MaxLength || IWordLength < MinLength)
+	else if (IWordLength > MaxWordLength || IWordLength < MinWordLength)
 	{
 		return EWordLengthStatus::Not_In_Range;
 	}
@@ -251,6 +348,51 @@ EWordLengthStatus FBullCowGame::CheckWordLengthValidity(FString WordLength) cons
 	else
 	{
 		return EWordLengthStatus::OK;
+	}
+}
+ECombinationGuessStatus FBullCowGame::CheckCombinationGuessValidity(FString Guess) const
+{
+	if (IsCommand(Guess)) // if guess is command expression
+	{
+		return ECombinationGuessStatus::Is_Command;
+	}
+	else if (HasWhiteSpace(Guess)) // if guess has white space
+	{
+		return ECombinationGuessStatus::Has_White_Space;
+	}
+	else if (!IsNumber(Guess)) // if guess has white space
+	{
+		return ECombinationGuessStatus::Is_Not_Number;
+	}
+	else if (Guess.length() != GetLockCombinationLength()) // if guess doesn't have right length
+	{
+		return ECombinationGuessStatus::Wrong_Length;
+	}
+	else // otherwise return Ok
+	{
+		return ECombinationGuessStatus::OK;
+	}
+}
+ECombinationLengthStatus FBullCowGame::CheckCombinationLengthValidity(FString CombinationLength) const
+{
+	// will return -1 if cannot conver to integer
+	int32 ICombinationLength = StringToInt32(CombinationLength);
+
+	if (HasWhiteSpace(CombinationLength))
+	{
+		return ECombinationLengthStatus::Has_White_Space;
+	}
+	else if (ICombinationLength == -1)
+	{
+		return ECombinationLengthStatus::Not_Number;
+	}
+	else if (ICombinationLength > MaxCombinationLength || ICombinationLength < MinCombinationLength)
+	{
+		return ECombinationLengthStatus::Not_In_Range;
+	}
+	else
+	{
+		return ECombinationLengthStatus::OK;
 	}
 }
 
@@ -280,6 +422,10 @@ void FBullCowGame::ExecuteCommand(FString Command)
 	case ECommandAction::Exit:
 		exit(0);
 		break;
+	case ECommandAction::Menu:
+		Reset();
+		bIsGoingToMenu = true;
+		break;
 	case ECommandAction::Give_Up:
 		bIsGivingUp = true;
 		break;
@@ -291,7 +437,7 @@ void FBullCowGame::ExecuteCommand(FString Command)
 	}
 }
 
-FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
+FBullCowCount FBullCowGame::SubmitValidWordGuess(FString Guess)
 {// received a valid guess, increments turn and returns counts
 
 	CurrentTry++;
@@ -331,19 +477,103 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 
 	return BullCowCount;
 }
+FBullCowCount FBullCowGame::SubmitValidCombinationGuess(FString Guess)
+{// received a valid guess, increments turn and returns counts
 
-void FBullCowGame::Reset(int32 WordLength)
+	CurrentTry++;
+	FBullCowCount BullCowCount;
+	int32 CombinationLength = GetLockCombinationLength();
+
+	// loop through all letters in the guess
+	for (int32 i = 0; i < CombinationLength; i++)
+	{
+		// compare if same letter different place (cow)
+		for (int32 j = 0; j < CombinationLength; j++)
+		{
+			// compare if same letter same place (bull)
+			if (Guess[i] == LockCombination[j])
+			{
+				if (i == j) // if same spot
+				{
+					BullCowCount.Bull++; // increment bull
+				}
+				else // otherwise
+				{
+					BullCowCount.Cow++; // increment cow
+				}
+			}
+		}
+	}
+
+	// if all bull
+	if (BullCowCount.Bull == CombinationLength)
+	{
+		bIsGameWon = true; // win
+	}
+	else
+	{
+		bIsGameWon = false; // not win
+	}
+
+	return BullCowCount;
+}
+
+void FBullCowGame::Reset()
 {
 	bIsGameWon = false;
 	bIsGivingUp = false;
+
+	WordAndDefinition.clear();
+	LockCombination.clear();
+	CurrentTry = 0;
+	MaxTries = 0;
+	CurrentHint = 0;
+	MaxHint = 0;
+	Hint.clear();
+	HintShown.clear();
+}
+
+void FBullCowGame::Reset(EGameMode GameMode, int32 WordLength)
+{
+	bIsGameWon = false;
+	bIsGivingUp = false;
+	bIsGoingToMenu = false;
+
+	switch (GameMode)
+	{
+	case EGameMode::Invalid_Mode:
+		break;
+	case EGameMode::Mode_Word:
+		ResetWordGame(WordLength);
+		break;
+	case EGameMode::Mode_Combination:
+		ResetCombinationGame(WordLength);
+		break;
+	default:
+		break;
+	}
+
+	return;
+}
+
+void FBullCowGame::ResetWordGame(int32 WordLength)
+{
 	WordAndDefinition = GetWordAndDefinitionFromDictionary(WordLength, IsogramDictionary);
 	CurrentTry = 1;
 	MaxTries = CalculateMaxTries(WordLength);
 	CurrentHint = 1;
 	MaxHint = CalculateMaxHint(WordLength);
 	InitializeHintSystem(WordLength);
+}
 
-	return;
+void FBullCowGame::ResetCombinationGame(int32 CombinationLength)
+{
+	LockCombination = GenerateRandomUniqueNumber(CombinationLength);
+	CurrentTry = 1;
+	MaxTries = CalculateMaxTries(CombinationLength);
+	CurrentHint = 1;
+	MaxHint = CalculateMaxHint(CombinationLength);
+	InitializeHintSystem(CombinationLength);
 }
 
 // helper functions
@@ -352,6 +582,7 @@ ECommandAction FBullCowGame::GetCommandAction(FString Command) const
 	if (Command == "hint") return ECommandAction::Hint;
 	else if (Command == "giveup") return ECommandAction::Give_Up;
 	else if (Command == "exit") return ECommandAction::Exit;
+	else if (Command == "menu") return ECommandAction::Menu;
 	else if (Command == "command list") return ECommandAction::Command_List;
 	else return ECommandAction::Invalid;
 }
@@ -395,9 +626,19 @@ bool FBullCowGame::HasWhiteSpace(FString Word) const
 }
 bool FBullCowGame::IsEligibleForHint() const
 {
-	int32 TimesHinted = (int32)HintLettersShown.size();
+	int32 TimesHinted = (int32)HintShown.size();
 	if (IsGameWon()) return false;
 	return (TimesHinted < MaxHint);
+}
+
+bool FBullCowGame::IsNumber(FString String) const
+{
+	for (auto Char : String)
+	{
+		if (!std::isdigit(Char)) return false;
+	}
+
+	return true;
 }
 
 TMap<int32, TArray<FString>> FBullCowGame::GetIsogramDictionaryFromFile(FString File)
@@ -474,7 +715,7 @@ TArray<FString> FBullCowGame::GetWordAndDefinitionFromDictionary(int32 WordLengt
 	while (!IsLengthAvalable(WordLength))
 	{
 		// generate new random number while word length is not available
-		WordLength = GetRandomInteger(MinLength, MaxLength);
+		WordLength = GetRandomInteger(MinWordLength, MaxWordLength);
 	}
 
 	while (Word.length() != WordLength || !IsIDAvailable(ID))
@@ -493,6 +734,30 @@ TArray<FString> FBullCowGame::GetWordAndDefinitionFromDictionary(int32 WordLengt
 	RemoveUsedIDAndLength(ID);
 
 	return WordAndDefinitioin;
+}
+FString FBullCowGame::GenerateRandomUniqueNumber(int32 CombinationLength)
+{
+	TArray<int32> Numbers = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	FString LockCombination = "";
+	int32 RandomUniqueNumber = 0;
+	int32 Index = 0;
+	int32 Temp = 0;
+	int32 Max = (int32)Numbers.size() - 1;
+
+	// generating unique random number
+	for (size_t i = 0; i < CombinationLength; i++)
+	{
+		Temp = Numbers[Max]; // save the value of the last number in numbers array
+		Index = GetRandomInteger(0, Max); // get random index
+		RandomUniqueNumber = Numbers[Index]; // pick a number at that index from numbers array
+		Numbers[Max] = RandomUniqueNumber; // step 1 of swapping position of random number and last number in array
+		Numbers[Index] = Temp; // step 2 of swapping position of random number and last number in array
+		Max--; // decrease max - meaning last value is no longer unique
+
+		LockCombination.append(std::to_string(RandomUniqueNumber)); // append to string
+	}
+
+	return LockCombination;
 }
 int32 FBullCowGame::CalculateMaxTries(int32 WordLength)
 {
@@ -513,19 +778,19 @@ void FBullCowGame::InitializingSomePrivateVariables(int32 ID, int32 WordLength)
 	// 2. find min and max value
 	if (ID == 1)
 	{
-		MinLength = WordLength;
-		MaxLength = MinLength;
+		MinWordLength = WordLength;
+		MaxWordLength = MinWordLength;
 	}
 
-	if (WordLength < MinLength) MinLength = WordLength;
-	if (WordLength > MaxLength) MaxLength = WordLength;
+	if (WordLength < MinWordLength) MinWordLength = WordLength;
+	if (WordLength > MaxWordLength) MaxWordLength = WordLength;
 
 	return;
 }
 void FBullCowGame::InitializeHintSystem(int32 WordLength)
 {
 	Hint.clear();
-	HintLettersShown.clear();
+	HintShown.clear();
 
 	// initialized all letters in hint to "_"
 	for (int32 i = 0; i < WordLength; i++)
@@ -570,7 +835,7 @@ bool FBullCowGame::IsLengthAvalable(int32 WordLength) const
 }
 bool FBullCowGame::IsHintLetterShown(char Letter) const
 {
-	for (auto HLetter : HintLettersShown)
+	for (auto HLetter : HintShown)
 	{
 		if (Letter == HLetter) return true;
 	}

@@ -5,7 +5,7 @@
 #include <map>
 #include <random>
 #include <chrono>
-#include <unordered_set>
+//#include <cmath>
 #include "CVSFileManager.h"
 
 #define TMap std::map
@@ -21,11 +21,28 @@ struct FBullCowCount
 	int32 Cow = 0;
 };
 
-enum class EGuessStatus
+enum class EGameMode
+{
+	Invalid_Mode,
+	Mode_Word,
+	Mode_Combination
+};
+
+enum class EWordGuessStatus
 {
 	Invalid_Status,
 	OK,
-	Not_Isogram,
+	Is_Not_Isogram,
+	Wrong_Length,
+	Has_White_Space,
+	Is_Command
+};
+
+enum class ECombinationGuessStatus
+{
+	Invalid_Status,
+	OK,
+	Is_Not_Number,
 	Wrong_Length,
 	Has_White_Space,
 	Is_Command
@@ -41,6 +58,15 @@ enum class EWordLengthStatus
 	No_Word_With_This_Length
 };
 
+enum class ECombinationLengthStatus
+{
+	Invalid_Status,
+	OK,
+	Not_Number,
+	Not_In_Range,
+	Has_White_Space,
+};
+
 // command action switch
 enum class ECommandAction
 {
@@ -48,6 +74,7 @@ enum class ECommandAction
 	Hint,
 	Exit,
 	Give_Up,
+	Menu,
 	Command_List
 };
 
@@ -58,20 +85,26 @@ public:
 	FBullCowGame(); // constructor
 	~FBullCowGame(); // destructor
 
-	// initializer
-	void Initialize();
-	// initializer that takes word length
-	void Initialize(int32);
+	// initializer that takes word length 
+	void Initialize(EGameMode, int32);
+	void InitWordGame(int32);
+	void InitCombinationGame(int32);
 
-	void Introduction() const;
-	int32 GetMinLength() const;
-	int32 GetMaxLength() const;
+	void WordGameIntro() const;
+	void CombinationGameIntro() const;
+
+	int32 GetMinWordLength() const;
+	int32 GetMaxWordLength() const;
+	int32 GetMinCombinationLength() const;
+	int32 GetMaxCombinationLength() const;
 	int32 GetMaxTries() const;
 	int32 GetCurrentTry() const;
 	int32 GetTriesLeft() const;
 	FString GetHiddenWord() const;
 	FString GetHiddenWordDefinition() const;
 	int32 GetHiddenWordLength() const;
+	FString GetLockCombination() const;
+	int32 GetLockCombinationLength() const;
 	FString GetHint();
 	TMap<int32, TArray<FString>> GetDictionary() const;
 	TArray<FString> Command_Expr() const;
@@ -82,18 +115,25 @@ public:
 	bool IsCommand(FString) const;
 	bool IsGameWon() const;
 	bool IsGivingUp() const;
+	bool IsGoingToMenu() const;
 	bool HasShownAllLetters() const;
 
 	// status checkers
-	EGuessStatus CheckGuessValidity(FString) const;
+	EWordGuessStatus CheckGuessValidity(FString) const;
 	EWordLengthStatus CheckWordLengthValidity(FString) const;
+	ECombinationGuessStatus CheckCombinationGuessValidity(FString) const;
+	ECombinationLengthStatus CheckCombinationLengthValidity(FString) const;
 
 	void ExecuteCommand(FString);
 	
 	// counts bulls and cows and increases turn #
-	FBullCowCount SubmitValidGuess(FString); // TODO move current try and its incement to game manager
+	FBullCowCount SubmitValidWordGuess(FString);
+	FBullCowCount SubmitValidCombinationGuess(FString);
 
-	void Reset(int32); // TODO make a more rich return value.
+	void Reset();
+	void Reset(EGameMode, int32); // TODO make a more rich return value.
+	void ResetWordGame(int32);
+	void ResetCombinationGame(int32);
 
 private:
 
@@ -108,32 +148,38 @@ private:
 	{
 		"hint",
 		"giveup",
+		"menu",
 		"exit",
 		"command list"
 	};
 
-	const FString AIName = FString("[WORD GAME MASTER]");
+	const FString AIName = FString("[GAME MASTER]");
 
 	// initialized int32 type variables in contructor
 	// initialize in helper function 
 	// InitializingSomePrivateVariables(int32, int32)
-	int32 MinLength;
-	int32 MaxLength;
+	int32 MinWordLength;
+	int32 MaxWordLength;
 	TMap<int32, int32> AvailableIDAndLengthTable;
 	TArray<char> Hint;
-	TArray<char> HintLettersShown; // Not initialized in helper function
+	TArray<char> HintShown; // Not initialized in helper function
+	EGameMode GameMode;
 
 	// method initialization
 	int32 CurrentTry = 0;
 	int32 MaxTries = 0;
 	int32 CurrentHint = 0;
 	int32 MaxHint = 0;
+	int32 MinCombinationLength = 0;
+	int32 MaxCombinationLength = 0;
 	TMap<int32, TArray<FString>> IsogramDictionary;
 	TArray<FString> WordAndDefinition;
+	FString LockCombination = "";
 
 	// default initialization
 	bool bIsGameWon = false;
 	bool bIsGivingUp = false;
+	bool bIsGoingToMenu = false;
 
 	// helper functions
 	// command action checker
@@ -142,9 +188,11 @@ private:
 	bool IsIsogram(FString) const;
 	bool HasWhiteSpace(FString) const;
 	bool IsEligibleForHint() const;
+	bool IsNumber(FString) const;
 
 	TMap<int32, TArray<FString>> GetIsogramDictionaryFromFile(FString);
 	TArray<FString> GetWordAndDefinitionFromDictionary(int32, TMap<int32, TArray<FString>>);
+	FString GenerateRandomUniqueNumber(int32);
 	int32 CalculateMaxTries(int32);
 	int32 CalculateMaxHint(int32);
 

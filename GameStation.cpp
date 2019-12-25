@@ -4,16 +4,16 @@ This acts as the view in a MVC pattern, and is responsible for all user
 interaction. For game logic, see FBullCowGame class.
 */
 
-#include "GameManager.h"
+#include "BullCowGameManager.h"
 #include "FBullCowGame.h"
 
-static GameManager Manager;
+static BullCowGameManager GameCartridge;
 
 int main()
 {
 	//PrintWordsInDictionary();
 	
-	Manager.PowerON(false);
+	GameCartridge.PowerON(true);
 
 	/*for (int32 i = 0; i < 5; i++)
 	{

@@ -6,31 +6,23 @@
 #include <cmath>
 #include "FBullCowGame.h"
 
-
 #define FString std::string
 #define int32 int
-
-enum class EGameMode
-{
-	Invalid_Mode,
-	Mode_Word,
-	Mode_Number
-};
 
 enum class EYesNoAnswerStatus
 {
 	Invalid_Status,
 	OK,
 	Not_Yes_And_Not_No,
-	First_Char_White_Space,
+	Has_White_Space
 };
 
-static class GameManager
+static class BullCowGameManager
 {
 public:
 	// instructor
-	GameManager();
-	~GameManager();
+	BullCowGameManager();
+	~BullCowGameManager();
 
 	// Play the game!!! TRUE for Debug mode, FALSE for Normal mode
 	void PowerON(bool);
@@ -42,42 +34,47 @@ private:
 	// variables
 	EGameMode GameMode = EGameMode::Invalid_Mode;
 	FBullCowGame BullCowGame;
-	FString AIName = FString("[GAME MANAGER]");;
+	FString AIName = FString("[GAME STATION]");;
 	static std::default_random_engine RandomGenerator;
 
 	// helper functions
 
 	// ************** PowerON **************
-	// Print introduction for the game
-	void PrintIntroduction(EGameMode);
-
 	// Game mode
-	void SetupGameMode();
+	EGameMode InitGameMode();
 
 	// Setting up the game
 	void Initialize();
 
 	// Run the game
-	void RunGameLoop(EGameMode, bool); //TODO do something with GameMode
+	void RunGameLoop(EGameMode, bool);
 	// ************** PowerON **************
 
 	// ************** Initialize **************
 	// Setup Word game
-	void StartWordGame();
+	void InitWordGame();
 
 	// Setup Number game
-	void InitNumGame();
+	void InitCombinationGame();
 	// ************** Initialize **************
 
 	// ************** Gameplay functions **************
 	// Play Word game
-	void PlayBullCowGame(bool);
+	void PlayWordGame(bool);
+	// Play Combination game
+	void PlayCombinationGame(bool IsDebugMode);
 
 	// Ask the desired word length from user
 	int32 AskWordLength();
 	
+	// Ask the desired number length from user
+	int32 AskCombinationLength();
+
 	// Get guess and loop until valid guess is received
-	FString GetValidGuess();
+	FString GetValidWordGuess();
+
+	// Get guess and loop until valid guess is received
+	FString GetValidCombinationGuess();
 	
 	// Print hint from game black box
 	void PrintHint();
@@ -89,28 +86,30 @@ private:
 	bool AskIfWantHint();
 	
 	// Print game summary
-	void PrintGameSummary(bool);
+	void PrintGameSummary(EGameMode, bool);
+	void PrintHiddenWordAndDefinition() const;
+	void PrintLockCombination() const;
 	
 	// Ask if want to play again
 	bool AskToPlayAgain();
 	
 	// Game mode checker
-	EGameMode GetValidGameMode(int32) const;
+	EGameMode CheckGameMode(int32) const;
 
 	// State of yes no input
 	EYesNoAnswerStatus CheckYesNoAnswerStatus(FString);
-	
+
 	// Is Yes or No checker
 	bool IsYesOrNo(FString);
 	
 	// Is first character white space
 	bool IsFirstCharWhiteSpace(FString);
-	
-	// Command helper
-	void PrintCommandListAndDescription();
 	// ************** Gameplay functions **************
 
 	// ************** Utility functions **************
+	// Get current Game Mode
+	EGameMode CurrentGameMode();
+
 	// Get a random integer within min and max
 	int32 GetRandomInteger(int32, int32);
 
