@@ -5,7 +5,6 @@
 #include <map>
 #include <random>
 #include <chrono>
-//#include <cmath>
 #include "CVSFileManager.h"
 
 #define TMap std::map
