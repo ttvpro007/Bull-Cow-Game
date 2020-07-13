@@ -12,8 +12,8 @@ static BullCowGameManager GameCartridge;
 int main()
 {
 	//PrintWordsInDictionary();
-	
-	GameCartridge.PowerON(true);
+
+	GameCartridge.PowerON();
 
 	/*for (int32 i = 0; i < 5; i++)
 	{

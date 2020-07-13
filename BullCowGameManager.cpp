@@ -10,10 +10,10 @@ BullCowGameManager::~BullCowGameManager()
 
 std::default_random_engine BullCowGameManager::RandomGenerator;
 
-void BullCowGameManager::PowerON(bool IsDebugMode)
+void BullCowGameManager::PowerON()
 {
 	Initialize(); // GameMode is changed in here
-	RunGameLoop(CurrentGameMode(), IsDebugMode);
+	RunGameLoop(CurrentGameMode());
 }
 
 void BullCowGameManager::PrintWordsInDictionary()
@@ -101,7 +101,7 @@ void BullCowGameManager::Initialize()
 	return;
 }
 
-void BullCowGameManager::RunGameLoop(EGameMode GameMode, bool IsDebugMode)  //TODO do something with GameMode
+void BullCowGameManager::RunGameLoop(EGameMode GameMode)
 {
 	switch (GameMode)
 	{
@@ -110,10 +110,10 @@ void BullCowGameManager::RunGameLoop(EGameMode GameMode, bool IsDebugMode)  //TO
 		std::cout << ": GameMode INVALID!!!.\n";
 		break;
 	case EGameMode::Mode_Word:
-		PlayWordGame(IsDebugMode);
+		PlayWordGame();
 		break;
 	case EGameMode::Mode_Combination:
-		PlayCombinationGame(IsDebugMode);
+		PlayCombinationGame();
 		break;
 	default:
 		std::cout << AIName;
@@ -129,7 +129,7 @@ void BullCowGameManager::InitWordGame()
 	int32 WordLength = 0;
 
 	AIName = BullCowGame.GetAIName();
-	BullCowGame.WordGameIntro();
+	BullCowGame.BullCowGameIntro(CurrentGameMode());
 	WordLength = AskWordLength();
 	BullCowGame.Initialize(CurrentGameMode(), WordLength);
 	std::cout << std::endl;
@@ -143,7 +143,7 @@ void BullCowGameManager::InitCombinationGame()
 	int32 CombinationLength = 0;
 
 	AIName = BullCowGame.GetAIName();
-	BullCowGame.CombinationGameIntro();
+	BullCowGame.BullCowGameIntro(CurrentGameMode());
 	CombinationLength = AskCombinationLength();
 	BullCowGame.Initialize(CurrentGameMode(), CombinationLength);
 	std::cout << std::endl;
@@ -151,7 +151,7 @@ void BullCowGameManager::InitCombinationGame()
 	std::cout << std::endl;
 }
 
-void BullCowGameManager::PlayWordGame(bool IsDebugMode)
+void BullCowGameManager::PlayWordGame()
 {
 	// variables
 	int32 MaxTries = 0; FString Guess = "";
@@ -164,9 +164,6 @@ void BullCowGameManager::PlayWordGame(bool IsDebugMode)
 	do
 	{
 		MaxTries = BullCowGame.GetMaxTries();
-
-		// debug mode for development process
-		if (IsDebugMode) std::cout << "[DEBUG MODE] The hidden word is [" << BullCowGame.GetHiddenWord() << "]\n\n";
 
 		// loop while is NOT won and there are still tries remaining
 		while (!BullCowGame.IsGameWon() && BullCowGame.GetCurrentTry() <= MaxTries)
@@ -196,11 +193,12 @@ void BullCowGameManager::PlayWordGame(bool IsDebugMode)
 
 	} while (bPlayAgain);
 
-	if (BullCowGame.IsGoingToMenu()) PowerON(IsDebugMode);
+	if (BullCowGame.IsGoingToMenu()) PowerON();
 
 	return;
 }
-void BullCowGameManager::PlayCombinationGame(bool IsDebugMode)
+
+void BullCowGameManager::PlayCombinationGame()
 {
 	// variables
 	int32 MaxTries = 0; FString Guess = "";
@@ -213,9 +211,6 @@ void BullCowGameManager::PlayCombinationGame(bool IsDebugMode)
 	do
 	{
 		MaxTries = BullCowGame.GetMaxTries();
-
-		// debug mode for development process
-		if (IsDebugMode) std::cout << "[DEBUG MODE] The combination is [" << BullCowGame.GetLockCombination() << "]\n\n";
 
 		// loop while is NOT won and there are still tries remaining
 		while (!BullCowGame.IsGameWon() && BullCowGame.GetCurrentTry() <= MaxTries)
@@ -245,7 +240,7 @@ void BullCowGameManager::PlayCombinationGame(bool IsDebugMode)
 
 	} while (bPlayAgain);
 
-	if (BullCowGame.IsGoingToMenu()) PowerON(IsDebugMode);
+	if (BullCowGame.IsGoingToMenu()) PowerON();
 
 	return;
 }

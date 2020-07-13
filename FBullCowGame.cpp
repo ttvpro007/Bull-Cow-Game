@@ -51,7 +51,31 @@ void FBullCowGame::InitCombinationGame(int32 CombinationLength)
 	InitializeHintSystem(CombinationLength);
 }
 
-void FBullCowGame::WordGameIntro() const
+FString FBullCowGame::WordGameIntro() const
+{
+	FString label =
+	"                _____________________________________________                   \n"
+	"               /                                             \\	             \n"
+	"              /           Welcome to Bulls and Cows           \\                \n"
+	"              \\               Word Game Mode!                 /                \n"
+	"               \\_____________________________________________/	             \n"
+	"                                                                                \n";
+	return label;
+}
+
+FString FBullCowGame::CombinationGameIntro() const
+{
+	FString label =
+	"                _____________________________________________                   \n"
+	"               /                                             \\	             \n"
+	"              /           Welcome to Bulls and Cows           \\                \n"
+	"              \\          Lock Combination Game Mode!          /                \n"
+	"               \\_____________________________________________/	             \n"
+	"                                                                                \n";
+	return label;
+}
+
+void FBullCowGame::BullCowGameIntro(EGameMode gameMode)
 {
 	// introduction
 	std::cout << "               .                                                                \n";
@@ -74,12 +98,19 @@ void FBullCowGame::WordGameIntro() const
 	std::cout << "                                      	                                      \n";
 	std::cout << " -..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.---.-'`,---..-_.--,-,,..._.--.. \n";
 	std::cout << "                                                                                \n";
-	std::cout << "                _____________________________________________                   \n";
-	std::cout << "               /                                             \\	              \n";
-	std::cout << "              /           Welcome to Bulls and Cows           \\                \n";
-	std::cout << "              \\               Word Game Mode!                 /                \n";
-	std::cout << "               \\_____________________________________________/	              \n";
-	std::cout << "                                                                                \n";
+	
+	switch (gameMode)
+	{
+	case EGameMode::Mode_Word:
+		std::cout << WordGameIntro();
+		break;
+	case EGameMode::Mode_Combination:
+		std::cout << CombinationGameIntro();
+		break;
+	default:
+		break;
+	}
+	
 	std::cout << "                                                                                \n";
 	std::cout << " -.-.,,._,-.--._.--,--'`,,'`,---..-_,,..._.--..-..-..-.--+-....__---._.-,--.--- \n";
 	std::cout << "                                                                                \n";
@@ -124,76 +155,6 @@ void FBullCowGame::WordGameIntro() const
 	std::cout << std::endl;
 	return;
 }
-void FBullCowGame::CombinationGameIntro() const
-{
-	// introduction
-	std::cout << "               .                                                                \n";
-	std::cout << "                		                                                          \n";
-	std::cout << "               |		                                                          \n";
-	std::cout << "      .               /                                                         \n";
-	std::cout << "       \\       I     	                                                      \n";
-	std::cout << "                   /                                                            \n";
-	std::cout << "         \\  ,g88R_                                                             \n";
-	std::cout << "           d888(`  ).                             _                         __  \n";
-	std::cout << "  -  --==  888(     ).=--              _      .+(`  )`.              .--._.'  ' \n";
-	std::cout << " )         Y8P(       '`.          _+(   ) --:(   .    )          .=(         ) \n";
-	std::cout << "         .+(`(      .   )     .-- '      _   `.  (    ) )         (   .  )   )  \n";
-	std::cout << "        ((    (..__.:'-'   .=(   )     (   )   ` _`  ) )         (   (   ))     \n";
-	std::cout << " `.     `(       ) )       (   .  )    ''    )    (   )    ._      `- __.'      \n";
-	std::cout << "   )      ` __.:'   )     (   (   )) (  (     ) _: `-'  .:(`  )           (     \n";
-	std::cout << " )  )  ( )       --'       `- __.'     -+_ _:'         :(      ))          '-__ \n";
-	std::cout << " .-'  (_.'          .')                                `(    )  ))              \n";
-	std::cout << "                   (_  )                                 ` __.:'                \n";
-	std::cout << "                                      	                                      \n";
-	std::cout << " -..,___.--,--'`,---..-.--+--.,,-,,..._.--..-._.---.-'`,---..-_.--,-,,..._.--.. \n";
-	std::cout << "                                                                                \n";
-	std::cout << "                _____________________________________________                   \n";
-	std::cout << "               /                                             \\	              \n";
-	std::cout << "              /           Welcome to Bulls and Cows           \\                \n";
-	std::cout << "              \\         Lock Combination Game Mode!           /                \n";
-	std::cout << "               \\_____________________________________________/	              \n";
-	std::cout << "                                                                                \n";
-	std::cout << "                                                                                \n";
-	std::cout << " -.-.,,._,-.--._.--,--'`,,'`,---..-_,,..._.--..-..-..-.--+-....__---._.-,--.--- \n";
-	std::cout << "                                                                                \n";
-	std::cout << "                                                                                \n";
-	std::cout << "                         ,@@@@@@@,              _.-^-._         +&-             \n";
-	std::cout << "                 ,,,.   ,@@@@@@/@@,         .-'---------'-.    .--.             \n";
-	std::cout << "               ,&%%&%&&%,@@@@@/@@@@@     .-'-------_-------'-. |__|             \n";
-	std::cout << "              ,%&\\%&&%&&%,@@@\\@@@/@@    /---------|_|---------\\|  |          \n";
-	std::cout << "              %&&%&%&/%&&%@@\\@@/ /@@   / _____           _____ \\  |           \n";
-	std::cout << "              %&&%/ %&%%&&@@\\ V /@@'  /| |_|_|  _______  |_|_| |\\ |           \n";
-	std::cout << "              `&%\\|o|/%&'    |.|       | |_|_|  |==|==|  |_|_| |  |            \n";
-	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |--|--|        |  |--|---|---|- \n";
-	std::cout << " |---|---|---|---|---|---|---|---|---|-|        |==|==|        |  |--|---|---|- \n";
-	std::cout << " '-'''-'-''-''-''''-''-'''-''''-''-'''-'''''-''-'''-'-''-'''''-''-'''-''-''-''' \n";
-	std::cout << " ' 'VV'   '  ''' ' '  '  ''       ' '   '''   'VV ''   '''' ' ''    '  ' ''V    \n";
-	std::cout << "  ''' ' VV'   'vv '  vv'   }___{  '''VV'  ''''  '  ___ '''  '  VVV' ' V''  '' ' \n";
-	std::cout << " ''' ' '  ' ''      ''     (o o)  ' '' vv'' '     (o o)      '   ''  v  '   VVV \n";
-	std::cout << "  '''V    'V   '''  /-------\\ /  '''     ''  '     \\ /-------\\   '''  '   '' \n";
-	std::cout << "  ''  ' '' '' '    / | BULL |O     ''  '    'vvv    O| COW  | \\   '''vv ' 'V   \n";
-	std::cout << "    'vv  '''      *  |-,--- |   ''vvv'   '   ''   '  |------|  *    '  ''   ''  \n";
-	std::cout << "  ''    'v'' ' ''    ^   '  ^ '  '''   '    ''''     ^ '''  ^ ' '' ''  '''  ' v \n";
-	std::cout << "    ''    vV '''  VV  ''    V  ' '' 'VV '''   ' Vv''   '''' ' ''V   'V  v'    ' \n";
-	std::cout << " '  ''    '     '''   '' '    ''  vv      '  '     ''   ''     '    ' '   '''   \n";
-	std::cout << " ''-'-''-''-''-''''-''-'''-''''-''-'''-''''''-'-'''-''-'''-'-''-'''''-''-'-'''- \n";
-	std::cout << std::endl;
-	std::cout << "    ***********************************************************************     \n";
-	std::cout << "    *  INSTRUCTION: In this game, you'll guess a combination with the     *     \n";
-	std::cout << "    *  length of your choice in a limited turns. After each guess, you'll *     \n";
-	std::cout << "    *  see the number of BULLS and COWS.                                  *     \n";
-	std::cout << "    *                                                                     *     \n";
-	std::cout << "    *  BULLS is the number you guessed right in the right place           *     \n";
-	std::cout << "    *  COWS is the number you guessed right in the wrong place            *     \n";
-	std::cout << "    *                                                                     *     \n";
-	std::cout << "    ***********************************************************************     \n";
-	std::cout << std::endl;
-	std::cout << "    ***********************************************************************     \n";
-	std::cout << "    *                     -~~:+|    NEW GAME    |+:~~-                    *     \n";
-	std::cout << "    ***********************************************************************     \n";
-	std::cout << std::endl;
-	return;
-}
 
 int32 FBullCowGame::GetMinWordLength() const { return MinWordLength; }
 int32 FBullCowGame::GetMaxWordLength() const { return MaxWordLength; }
@@ -202,6 +163,19 @@ int32 FBullCowGame::GetMaxCombinationLength() const { return MaxCombinationLengt
 int32 FBullCowGame::GetMaxTries() const { return MaxTries; }
 int32 FBullCowGame::GetCurrentTry() const { return CurrentTry; }
 int32 FBullCowGame::GetTriesLeft() const { return MaxTries - CurrentTry + 1; }
+
+FString FBullCowGame::GetDebugString(EGameMode gameMode)
+{
+	switch (gameMode)
+	{
+	case EGameMode::Mode_Word:
+		return GetHiddenWord();
+	case EGameMode::Mode_Combination:
+		return GetLockCombination();
+	}
+	return "";
+}
+
 FString FBullCowGame::GetHiddenWord() const { return WordAndDefinition[0]; }
 FString FBullCowGame::GetHiddenWordDefinition() const { return WordAndDefinition[1]; }
 int32 FBullCowGame::GetHiddenWordLength() const { return (int32)WordAndDefinition[0].length(); }
@@ -277,6 +251,7 @@ void FBullCowGame::PrintCommandListAndDescription() const
 	std::cout << ": Here is the command list for the game in case you need it\n";
 	std::cout << "\n*******************************************\n";
 	std::cout << "COMMAND LIST:\n";
+	std::cout << "debug - for debugging purpose\n";
 	std::cout << "hint - revealing a letter in the hidden word\n";
 	std::cout << "giveup - give up the round\n";
 	std::cout << "menu - go to menu\n";
@@ -405,6 +380,9 @@ void FBullCowGame::ExecuteCommand(FString Command)
 	case ECommandAction::Invalid:
 		std::cout << AIName;
 		std::cout << ": Command Invalid.\n\n";
+		break;
+	case ECommandAction::Debug:
+		std::cout << "[DEBUG] The combination is [" << GetDebugString(GameMode) << "]\n\n";
 		break;
 	case ECommandAction::Hint:
 		std::cout << AIName;
@@ -579,7 +557,8 @@ void FBullCowGame::ResetCombinationGame(int32 CombinationLength)
 // helper functions
 ECommandAction FBullCowGame::GetCommandAction(FString Command) const
 {
-	if (Command == "hint") return ECommandAction::Hint;
+	if (Command == "debug") return ECommandAction::Debug;
+	else if (Command == "hint") return ECommandAction::Hint;
 	else if (Command == "giveup") return ECommandAction::Give_Up;
 	else if (Command == "exit") return ECommandAction::Exit;
 	else if (Command == "menu") return ECommandAction::Menu;

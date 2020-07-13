@@ -70,6 +70,7 @@ enum class ECombinationLengthStatus
 enum class ECommandAction
 {
 	Invalid,
+	Debug,
 	Hint,
 	Exit,
 	Give_Up,
@@ -89,8 +90,9 @@ public:
 	void InitWordGame(int32);
 	void InitCombinationGame(int32);
 
-	void WordGameIntro() const;
-	void CombinationGameIntro() const;
+	FString WordGameIntro() const;
+	FString CombinationGameIntro() const;
+	void BullCowGameIntro(EGameMode);
 
 	int32 GetMinWordLength() const;
 	int32 GetMaxWordLength() const;
@@ -99,6 +101,7 @@ public:
 	int32 GetMaxTries() const;
 	int32 GetCurrentTry() const;
 	int32 GetTriesLeft() const;
+	FString GetDebugString(EGameMode);
 	FString GetHiddenWord() const;
 	FString GetHiddenWordDefinition() const;
 	int32 GetHiddenWordLength() const;
@@ -145,6 +148,7 @@ private:
 	// 5. enjoy your newly created command expression!
 	const TArray<FString> COMMAND_EXPR = 
 	{
+		"debug",
 		"hint",
 		"giveup",
 		"menu",

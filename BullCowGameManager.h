@@ -24,8 +24,8 @@ public:
 	BullCowGameManager();
 	~BullCowGameManager();
 
-	// Play the game!!! TRUE for Debug mode, FALSE for Normal mode
-	void PowerON(bool);
+	// Play the game!!!
+	void PowerON();
 
 	// Print all the words in the word bank
 	void PrintWordsInDictionary();
@@ -47,7 +47,8 @@ private:
 	void Initialize();
 
 	// Run the game
-	void RunGameLoop(EGameMode, bool);
+	//void RunGameLoop(EGameMode, bool);
+	void RunGameLoop(EGameMode);
 	// ************** PowerON **************
 
 	// ************** Initialize **************
@@ -60,9 +61,9 @@ private:
 
 	// ************** Gameplay functions **************
 	// Play Word game
-	void PlayWordGame(bool);
+	void PlayWordGame();
 	// Play Combination game
-	void PlayCombinationGame(bool IsDebugMode);
+	void PlayCombinationGame();
 
 	// Ask the desired word length from user
 	int32 AskWordLength();
